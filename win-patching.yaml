@@ -3,6 +3,7 @@
 - name: Windows update playbook
   # gather_facts: no
   hosts: windows
+  strategy: free
   vars:
     ansible_user: "Administrator"
     # ansible_password: "Charlie 13"
@@ -52,7 +53,7 @@
         category_names: "*"
         reject_list: "{{ reject_list }}"
         state: searched
-        server_selection: windows_update
+        server_selection: default
         log_path: "C:\\Automation\\logs\\update\\{{ log_file_name }}"
       register: update_result
 
@@ -67,7 +68,7 @@
         category_names: "*"
         reject_list: "{{ reject_list }}"
         state: installed
-        server_selection: windows_update
+        server_selection: default
         reboot: true
         reboot_timeout: 1800
         log_path: "C:\\Automation\\logs\\update\\{{ log_file_name }}"
