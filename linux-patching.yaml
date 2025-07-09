@@ -1,17 +1,16 @@
 ---
 # Tasks to patch a Linux Server using apt
 - name: Linux update playbook
-  # gather_facts: no
   hosts: linux
   strategy: free
+  become: true
   vars:
     ansible_user: "ansible"
-  become: true
 
   tasks:
     - name: update all packages to their latest version
-      become: true
       ansible.builtin.apt:
         name: "*"
         state: latest
+        upgrade: dist
         update_cache: yes
