@@ -6,3 +6,7 @@ windows:
       ansible_host: 10.10.240.151
     AE50CLIENT:
       ansible_host: 10.10.240.152
+linux:
+  hosts:
+    AELINUXSQL:
+      ansible_host: 10.10.240.17
