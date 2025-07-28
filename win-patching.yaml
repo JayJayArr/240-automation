@@ -6,14 +6,12 @@
   strategy: free
   vars:
     ansible_user: "Administrator"
-    # ansible_password: "Charlie 13"
     ansible_port: 22
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
     ansible_ssh_retries: 3
     ansible_shell_type: powershell
     ansible_become_method: runas
     ansible_become_user: "{{ ansible_user }}"
-    # ansible_become_user: "Administrator"
     reject_list: ["KB1111111"]
   become: true
 
