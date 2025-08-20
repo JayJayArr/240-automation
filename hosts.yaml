@@ -10,3 +10,9 @@ linux:
   hosts:
     AELINUXSQL:
       ansible_host: 10.10.240.17
+mssql-linux:
+  hosts:
+    AETESTSQL01:
+      ansible_host: 10.10.240.17
+    AEDEMOSQL01:
+      ansible_host: 10.10.240.18
