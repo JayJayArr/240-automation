@@ -8,8 +8,12 @@ windows:
       ansible_host: 10.10.240.152
 linux:
   hosts:
-    AELINUXSQL:
+    AETESTSQL01:
       ansible_host: 10.10.240.17
+    AEDEMOSQL01:
+      ansible_host: 10.10.240.18
+    AEMONITOR01:
+      ansible_host: 10.10.240.11
 mssql-linux:
   hosts:
     AETESTSQL01:

@@ -75,6 +75,7 @@ Vagrant.configure("2") do |config|
   #   apt-get install -y apache2
   # SHELL
   #
+  config.vm.boot_timeout = 600
 
   config.vm.provision "playbook1", type:"ansible" do |ansible|
     ansible.playbook = "docker.yaml"

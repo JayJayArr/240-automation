@@ -1,0 +1,5 @@
+- name: Install Docker Role
+  become: true
+  hosts: all
+  roles:
+    - geerlingguy.docker
