@@ -1,12 +1,6 @@
 ---
 windows:
   hosts:
-    AE50MSSQL:
-      ansible_host: 10.10.240.150
-    AE50SERVER:
-      ansible_host: 10.10.240.151
-    AE50CLIENT:
-      ansible_host: 10.10.240.152
 linux:
   hosts:
     AETESTSQL01:
