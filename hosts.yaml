@@ -9,8 +9,6 @@ linux:
       ansible_host: 10.10.240.18
     AEMONITOR01:
       ansible_host: 10.10.240.11
-    AE50CRYPT:
-      ansible_host: 10.10.240.153
 mssql-linux:
   hosts:
     AETESTSQL01:
@@ -19,5 +17,3 @@ mssql-linux:
       ansible_host: 10.10.240.18
 prod:
   hosts:
-    AE50CRYPT:
-      ansible_host: 10.10.240.153
