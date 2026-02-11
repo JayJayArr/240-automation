@@ -61,7 +61,9 @@ services:
 
 volumes:
   prometheus-data:
+    external: true
   grafana-data:
+    external: true
 
 networks:
   monitoring:
