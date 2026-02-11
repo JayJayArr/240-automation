@@ -3,8 +3,8 @@ services:
     container_name: gatus
     image: twinproduction/gatus
     restart: unless-stopped
-    ports:
-      - "8080:8080"
+    # ports:
+    #   - "8080:8080"
     volumes:
       - ./gatus:/config
     networks:
@@ -16,14 +16,13 @@ services:
     restart: unless-stopped
     depends_on:
       - gatus
-    ports:
-      - "9090:9090"
+    # ports:
+    #   - "9090:9090"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
-      # - "--storage.tsdb.path=/prometheus"
       - "--storage.tsdb.retention.time=30d"
     networks:
       - monitoring
@@ -34,10 +33,10 @@ services:
     restart: unless-stopped
     depends_on:
       - prometheus
-    ports:
-      - "3000:3000"
+    # ports:
+    #   - "3000:3000"
     environment:
-      - GF_SERVER_ROOT_URL=http://10.10.240.11:3000/
+      - GF_SERVER_ROOT_URL=https://10.10.240.11
       # GF_SECURITY_ADMIN_USER: admin
       # GF_SECURITY_ADMIN_PASSWORD: change-me-now
       # GF_USERS_ALLOW_SIGN_UP: "false"
