@@ -14,18 +14,23 @@ scrape_configs:
 
   - job_name: "dns-a-windows"
     dns_sd_configs:
-      - names: 
-        - 'AEPROWATCH65SEC.ae.int'
-        - 'SANDOZPROWATCH.ae.int'
-        - 'SDZ-PWDATA.ae.int'
+      - names:
+          - "AEDC01.ae.int"
+          - "AEDC02.ae.int"
+          - "AEDHCP01.ae.int"
+          - "AEVEEAM01.ae.int"
+          - "AECERT01.ae.int"
+          - "AEPROWATCH65SEC.ae.int"
+          - "SANDOZPROWATCH.ae.int"
+          - "SDZ-PWDATA.ae.int"
         type: A
         port: 9182
 
   - job_name: "dns-a-linux"
     dns_sd_configs:
-      - names: 
-        - 'AETESTSQL01.ae.int'
-        - 'AEDEMOSQL01.ae.int'
-        - 'AEMONITOR01.ae.int'
+      - names:
+          - "AETESTSQL01.ae.int"
+          - "AEDEMOSQL01.ae.int"
+          - "AEMONITOR01.ae.int"
         type: A
         port: 9100
