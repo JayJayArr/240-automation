@@ -1,0 +1,1602 @@
+﻿//
+// __          ___        _____                     _  __          _______ ______ 
+// \ \        / (_)      / ____|                   | | \ \        / / ____|  ____|
+//  \ \  /\  / / _ _ __ | |  __ _   _  __ _ _ __ __| |  \ \  /\  / / (___ | |__   
+//   \ \/  \/ / | | '_ \| | |_ | | | |/ _` | '__/ _` |   \ \/  \/ / \___ \|  __|  
+//    \  /\  /  | | | | | |__| | |_| | (_| | | | (_| |    \  /\  /  ____) | |____ 
+//     \/  \/   |_|_| |_|\_____|\__,_|\__,_|_|  \__,_|     \/  \/  |_____/|______|
+//
+//
+// WinGuard SQL Export Script
+//
+// Sample file for Microsoft SQL Server 2012/2022
+// ---------------------------- Time format ----------------------
+// Please note that the placeholder type 'TIME' is stored as a string, formatted according to WinGuard's time format specifications. 
+// If the database uses a different time format, ensure to cast it properly in your SQL statement to match the required format
+//
+// ---------------------------- Event ----------------------------
+// 
+// Possible values for '<>' placeholders
+// +---------------------------+-----------+----+-----+-------+-------------+-------------------------------------------------------------------------------------------------------+
+// | Name                      | Type      | Ui | Lng | Flags | Filter      | Description                                                                                           |
+// +---------------------------+-----------+----+-----+-------+-------------+-------------------------------------------------------------------------------------------------------+
+// | event.id                  | GUID      |    |     |       | =           | (Global) Event Id: Guid                                                                               |
+// | event.hrid                | STRING    |    |     |       |             | (Global) Event Id: Human Readable Format  <Station>-<Number>                                          |
+// | event.hrid.int32          | UINT32    |    |     |       |             | (Global) Event Id: 8  Bit Station - 24 Bit Nummer                                                     |
+// | event.hrid.int32.src      | UINT8     |    |     |       |             | (Global) Event Id: 8  Bit Station                                                                     |
+// | event.hrid.int32.num      | UINT24    |    |     |       |             | (Global) Event Id: 24 Bit Nummer                                                                      |
+// | event.hrid.int64          | UINT64    |    |     |       |             | (Global) Event Id: 16 Bit Station - 48 Bit Nummer                                                     |
+// | event.hrid.int64.src      | UINT16    |    |     |       |             | (Global) Event Id: 16 Bit Station                                                                     |
+// | event.hrid.int64.num      | UINT48    |    |     |       |             | (Global) Event Id: 48 Bit Nummer                                                                      |
+// | event.segment.id          | GUID      |    |     |       | =           | Database Id of event segment                                                                          |
+// | event.segment.name        | STRING    |    |     |       |             | Name of the segment                                                                                   |
+// | event.type                | UINT16    | X  | X   | X     | =           | Type of the event, see below for the constants                                                        |
+// | event.type.simulation     | BOOL      | X  | X   |       |             | True if the event is of type "simulation"                                                             |
+// | event.type.revalarm       | BOOL      | X  | X   |       |             | True if the event is of type "revision alarm"                                                         |
+// | event.type.revfault       | BOOL      | X  | X   |       |             | True if the event is of type "revision fault"                                                         |
+// | event.type.revmsg         | BOOL      | X  | X   |       |             | True if the event is of type "revision message"                                                       |
+// | event.type.rev            | BOOL      | X  | X   |       |             | True if the event is of type "revision"                                                               |
+// | event.type.prealarm       | BOOL      | X  | X   |       |             | True if the event is of type "prealarm"                                                               |
+// | event.type.alarm          | BOOL      | X  | X   |       |             | True if the event is of type "alarm"                                                                  |
+// | event.type.fault          | BOOL      | X  | X   |       |             | True if the event is of type "fault"                                                                  |
+// | event.type.warning        | BOOL      | X  | X   |       |             | True if the event is of type "warning"                                                                |
+// | event.type.msg            | BOOL      | X  | X   |       |             | True if the event is of type "message"                                                                |
+// | event.type.off            | BOOL      | X  | X   |       |             | True if the event is of type "off"                                                                    |
+// | event.type.active         | BOOL      | X  | X   |       |             | True if the event is of type "active"                                                                 |
+// | event.type.disarmed       | BOOL      | X  | X   |       |             | True if the event is of type "disarmed"                                                               |
+// | event.type.armed          | BOOL      | X  | X   |       |             | True if the event is of type "armed"                                                                  |
+// | event.type.lock           | BOOL      | X  | X   |       |             | True if the event is of type "lock"                                                                   |
+// | event.name                | STRING    | X  | X   |       | =           | -                                                                                                     |
+// | event.text                | STRING    | X  | X   |       | =           | -                                                                                                     |
+// | event.priority            | INT16     |    |     |       |             | -                                                                                                     |
+// | event.desc                | STRING    | X  | X   |       | =           | -                                                                                                     |
+// | event.tags                | STRING    | X  | X   |       |             | List of tag names                                                                                     |
+// | event.station.id          | UINT32    |    |     |       | =           | Id of the station this event originated from                                                          |
+// | event.user.code           | STRING    |    |     |       | =           | User code of the active user when the event was created                                               |
+// | event.state               | UINT16    | X  | X   |       |             | state of the event (bitmask), see below for the constants                                             |
+// | event.state.accepted      | BOOL      | X  | X   |       |             | True if the event is in "accepted" state                                                              |
+// | event.state.deferred      | BOOL      | X  | X   |       |             | True if the event is in "deferred" state                                                              |
+// | event.state.ended         | BOOL      | X  | X   |       |             | True if the event is in "ended" state                                                                 |
+// | event.state.completed     | BOOL      | X  | X   |       |             | True if the event is in "completed" state                                                             |
+// | event.state.locked        | BOOL      | X  | X   |       |             | True if the event is in "locked" state                                                                |
+// | event.location.id         | GUID      |    |     |       | =           | The id of the location the event originated from                                                      |
+// | event.location.name       | STRING    | X  | X   |       |             | The name of the location the event originated from                                                    |
+// | event.datapoint.id        | GUID      |    |     |       | =           | The id of the datapoint the event is created for (if any, 0 otherwise)                                |
+// | event.datapoint.category  | STRING    |    |     |       | =           | The category code of the datapoint the event is created for                                           |
+// | event.sensornum           | UINT16    |    |     |       |             | The sensor the event is created for (in combination with the datapoint id, 0 if no sensor)            |
+// | event.devicetype          | STRING    | X  | X   |       |             | The type of the sensor the event is created for, can be empty                                         |
+// | event.link.ext            | STRING    |    |     |       |             | The extension code of the extension that created this event                                           |
+// | event.link.url            | STRING    |    |     |       |             | The URL of the datapoint the event was created for                                                    |
+// | event.link.objtype        | STRING    |    |     |       |             | The object type of the datapoint the event was created for                                            |
+// | event.latitude            | DOUBLE    |    |     |       |             | Coordinates for positioning in graphics (only used in GIS graphics)                                   |
+// | event.longitude           | DOUBLE    |    |     |       |             | Coordinates for positioning in graphics (only used in GIS graphics)                                   |
+// | event.altitude            | DOUBLE    |    |     |       |             | Coordinates for positioning in graphics (only used in GIS graphics)                                   |
+// | event.begin.time          | TIMESTAMP | X  |     |       | =,>=,<=,<,> | The date and time the event was created (Unix timestamp)                                              |
+// | event.accepted.time       | TIMESTAMP | X  |     |       |             | The date and time the event was accepted (Unix timestamp)                                             |
+// | event.completed.time      | TIMESTAMP | X  |     |       |             | The date and time the event was completed (Unix timestamp)                                            |
+// | event.completed.user.code | STRING    |    |     |       |             | The user who completed the event                                                                      |
+// | event.end.time            | TIMESTAMP | X  |     |       |             | The date and time the event ended (Unix timestamp)                                                    |
+// | event.input."name"        | STRING    | X  | X   |       | =           | Value of the corresponding input which is specified by "name" ( e.g. event.input.reason_alarm )       |
+// | event.groupid             | STRING    |    |     |       |             | Group ID (i.e. the group parent's event ID): Human-readable format <Station>-<Number>                 |
+// | event.groupid.src         | UINT8     |    |     |       |             | Group ID (i.e. the group parent's event ID): 8 bit station number                                     |
+// | event.groupid.num         | UINT24    |    |     |       |             | Group ID (i.e. the group parent's event ID): 24 bit number                                            |
+// | event.groupcount          | UINT32    |    |     |       |             | Number of group members (only used for group parents and excluding the parent itself)                 |
+// +---------------------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------+
+// Certain ids can be formatted, like setting the output language or changing the representation of the value, using the following syntax: 
+// Format id: [id] [/param1=value /param2=value /...]
+// Example: event.type                       -> 1 
+//          event.type /fmt=flags            -> [ALARM]
+//          event.type /fmt=ui               -> Alarm
+//          event.type /lng=de /fmt=ui       -> Alarm
+//          event.type /lng="de" /fmt="ui"   -> Alarm
+//          event.type.alarm                 -> 1/0 
+//          event.type.armed                 -> 1/0
+//          event.type.armed /lng=en /fmt=ui -> True / False
+//
+// Please note the specific language /lng is only used, if /fmt=ui is set. If /fmt=ui is not set, the untranslated string is transmitted.
+//
+// Possible values for event.type
+// If used in filters, the string representation of the type must be used (e.g. "event.type = 'ALARM'").
+// +-------+-------------------------------+-----------+
+// | Value | Type                          | Filtering |
+// +-------+-------------------------------+-----------+
+// | 1     | Alarm                         | ALARM     |
+// | 2     | Fault                         | FAULT     |
+// | 4     | Message                       | MSG       |
+// | 8     | Warning                       | WARNING   |
+// | 16    | Prealarm                      | PREALARM  |
+// | 32    | Revision Alarm                | REVALARM  |
+// | 64    | Revision Fault                | REVFAULT  |
+// | 128   | Revision Message              | REVMSG    |
+// | 256   | Active                        | ACTIVE    |
+// | 512   | Disarmed                      | DISARMED  |
+// | 1024  | Locked                        | LOCK      |
+// | 2048  | Off                           | OFF       |
+// | 4096  | Unknown                       | UNKNOWN   |
+// | 8192  | Armed                         | ARMED     |
+// | 16384 | Revision                      | REV       |
+// | 32769 | Alarm (Simulation)            |           |
+// | 32770 | Fault (Simulation)            |           |
+// | 32772 | Message (Simulation)          |           |
+// | 32776 | Warning (Simulation)          |           |
+// | 32784 | Prealarm (Simulation)         |           |
+// | 32800 | Revision Alarm (Simulation)   |           |
+// | 32832 | Revision Fault (Simulation)   |           |
+// | 32896 | Revision Message (Simulation) |           |
+// | 33024 | Active (Simulation)           |           |
+// | 33280 | Disarmed (Simulation)         |           |
+// | 33792 | Lock (Simulation)             |           |
+// | 34816 | Off (Simulation)              |           |
+// | 40960 | Armed (Simulation)            |           |
+// | 49152 | Revision (Simulation)         |           |
+// +-------+-------------------------------+-----------+
+//
+//
+// Bitmask for event.state
+// +------+-----------+
+// | Bit  | state     |
+// +------+-----------+
+// | 0x01 | accepted  |
+// | 0x04 | deferred  |
+// | 0x08 | completed |
+// | 0x10 | ended     |
+// | 0x20 | locked    |
+// +------+-----------+
+//
+//
+// ---------------------------- Log ----------------------------
+//
+// Possible values for '<>' placeholders
+// +---------------------------+-----------+----+-----+----------------+------------------------------------------------------------------------------------------------+
+// | Name                      | Type      | Ui | Lng | Filter         | Description                                                                                    |
+// +---------------------------+-----------+----+-----+----------------+------------------------------------------------------------------------------------------------+
+// | logentry.id               | GUID      |    |     | =,!=,>=,<=,<,> | Database Id of the log entry                                                                   |
+// | logentry.time             | TIME      |    |     | =,!=,>=,<=,<,> | Time of the event.                                                                             |
+// | logentry.time.unix        | TIMESTAMP | X  |     | =,!=,>=,<=,<,> | Time of the event (unix timestamp).                                                            |
+// | logentry.station          | UINT16    |    |     | =,!=           | Number of the workstation that generated the entry                                             |
+// | logentry.extension        | STRING    |    |     | =,!=           | Extension code of the triggering extension                                                     |
+// | logentry.class            | UINT32    | X  | X   | =,!=           | Information about the class (warning, info, etc. ) of the log entry                            |
+// | logentry.category         | UINT32    | X  | X   | =,!=           | Information about the category (system, event, etc.) of the log entry                          |
+// | logentry.incident         | STRING    | X  | X   |                | Information about the event (login, entry, etc.) of the log entry                              |
+// | logentry.details1         | STRING    |    |     |                | Details1 about the event (fault, turn on by..., etc.)                                          |
+// | logentry.details2         | STRING    |    |     |                | Details2 about the event (fault, turn on by..., etc.)                                          |
+// | logentry.usercode         | STRING    |    |     |                | Code of the user logged into the workstation                                                   |
+// | logentry.datapointid      | GUID      |    |     |                | Database id of the datapoint that is assigned to the log entry                                 |
+// | logentry.eventid          | GUID      |    |     | =,!=           | Database id of the event that is assigned to the log entry                                     |
+// | logentry.edittime         | TIME      |    |     |                | Date and time of last change of the definition                                                 |
+// | logentry.edituser         | STRING    |    |     |                | User code who made the last change                                                             |
+// +---------------------------+-----------+----+-----+----------------+------------------------------------------------------------------------------------------------+
+//
+// Please note the specific language /lng is only used, if /fmt=ui is set. If /fmt=ui is not set, the untranslated string is transmitted.
+// 
+// ---------------------------- Datapoint ----------------------------
+//
+// Possible values for '<>' placeholders
+// +------------------------------------+-----------+----+-----+-------+-------------+------------------------------------------------------------------------------------------------+
+// | Name                               | Type      | Ui | Lng | Index | Filter      | Description                                                                                    |
+// +------------------------------------+-----------+----+-----+-------+-------------+------------------------------------------------------------------------------------------------+
+// | datapoint.id                       | GUID      |    |     |       | =,>=,<=,<,> | Database Id of datapoint                                                                       |
+// | datapoint.parentid                 | GUID      |    |     |       |             | Database Id of datapoint parrent                                                               |
+// | datapoint.segmentid                | GUID      |    |     |       | =           | Database Id of datapoint segment                                                               |
+// | datapoint.segment.name             | STRING    |    |     |       |             | Name of the segment                                                                            |
+// | datapoint.code                     | STRING    |    |     |       |             | Datapoint code, used for references in graphics                                                |
+// | datapoint.category                 | STRING    |    |     |       | =           | Category code of the datapoint                                                                 |
+// | datapoint.type                     | UINT16    | X  | X   |       | =           | Type Id of datapoint (1=group, 2=object, 3=member, 4=filter)                                   |
+// | datapoint.name                     | STRING    | X  | X   |       |             | -                                                                                              |
+// | datapoint.desc                     | STRING    | X  | X   |       |             | -                                                                                              |
+// | datapoint.tags                     | STRING    | X  | X   |       |             | List of tag names                                                                              |
+// | datapoint.locationid               | GUID      |    |     |       | =           | Database id of datapoint location                                                              |
+// | datapoint.location.name            | STRING    | X  | X   |       |             | Name of datapoint location                                                                     |
+// | datapoint.link.ext.code            | STRING    |    |     |       |             | Extension code of associated extension                                                         |
+// | datapoint.link.ext.name            | STRING    | X  | X   |       |             | Name of associated extension                                                                   |
+// | datapoint.link.url                 | STRING    |    |     |       |             | URL part of link                                                                               |
+// | datapoint.link.objtype             | STRING    |    |     |       |             | Linked object type                                                                             |
+// | datapoint.sensornum                | UINT16    |    |     |       |             | Sensor number                                                                                  |
+// | datapoint.latitude                 | DOUBLE    |    |     |       |             | Coordinates of the datapoint or sensor for positioning in graphics (only used in GIS graphics) |
+// | datapoint.longitude                | DOUBLE    |    |     |       |             | Coordinates of the datapoint or sensor for positioning in graphics (only used in GIS graphics) |
+// | datapoint.altitude                 | DOUBLE    |    |     |       |             | Coordinates of the datapoint or sensor for positioning in graphics (only used in GIS graphics) |
+// | datapoint.devicetype.code          | STRING    |    |     |       |             | Device type code                                                                               |
+// | datapoint.devicetype.name          | STRING    | X  | X   |       |             | Device type name                                                                               |
+// | datapoint.text                     | STRING    |    |     |       |             | Text path. Param /fmt=params appends the text params.                                          |
+// | datapoint.textmacro                | STRING    | X  | X   | X     |             | Text macro definition (text or text module)                                                    |
+// | datapoint.graphic                  | STRING    |    |     | X     |             | Graphic path. Param /fmt=params appends the graphic params.                                    |
+// | datapoint.note                     | STRING    | X  | X   |       |             | Instructional text of the datapoint                                                            |
+// | datapoint.script                   | STRING    |    |     |       |             | Associated script file                                                                         |
+// | datapoint.edittime                 | TIME      |    |     |       |             | Date and time of last change of the definition                                                 |
+// | datapoint.edittime.unix            | TIMESTAMP | X  |     |       |             | Date and time of last change of the definition (unix timestamp)                                |
+// | datapoint.edituser                 | STRING    |    |     |       |             | User code who made the last change                                                             |
+// | datapoint.deletetime               | TIME      |    |     |       |             | Date and time of deletion of the definition (only set when [datapoint.delete] is triggered)    |
+// | datapoint.deleteuser               | STRING    |    |     |       |             | User code who deleted the datapoint (only set when [datapoint.delete] is triggered)            |
+// | datapoint.deletetime.unix          | TIMESTAMP | X  |     |       |             | Date and time of deletion of the definition (unix timestamp)        |                          |
+// +------------------------------------+-----------+----+-----+-------+-------------+------------------------------------------------------------------------------------------------+
+//
+// Please note the specific language /lng is only used, if /fmt=ui is set. If /fmt=ui is not set, the untranslated string is transmitted.
+//
+// ---------------------------- Location ----------------------------
+// 
+// Possible values for '<>' placeholders
+// +---------------------------+-----------+----+-----+-------------+--------------------------------------------------------------------------------------------------------+
+// | Name                      | Type      | Ui | Lng | Filter      | Description                                                                                            |
+// +---------------------------+-----------+----+-----+-------------+--------------------------------------------------------------------------------------------------------+
+// | location.id               | GUID      |    |     | =,>=,<=,<,> | Database Id of location                                                                                |
+// | location.parentid         | GUID      |    |     |             | Database Id of location parrent                                                                        |
+// | location.segmentid        | GUID      |    |     | =           | Database Id of location segment                                                                        |
+// | location.segment.name     | STRING    |    |     |             | Name of location segment                                                                               |
+// | location.order            | STRING    |    |     |             | Order of the location                                                                                  |
+// | location.type             | UINT16    |    |     |             | Type of location                                                                                       |
+// | location.name             | STRING    | X  | X   |             | -                                                                                                      |
+// | location.desc             | STRING    | X  | X   |             | -                                                                                                      |
+// | location.tags             | STRING    | X  | X   |             | List of tag names                                                                                      |
+// | location.graphic          | STRING    |    |     |             | Graphic path. Param /fmt=params appends the graphic params.                                            |
+// | location.text             | STRING    |    |     |             | Text path. Param /fmt=params appends the text params.                                                  |
+// | location.extref           | STRING    | X  | X   |             |                                                                                                        |
+// | location.latitude         | DOUBLE    |    |     |             | Coordinates of the Location for positioning in graphics (only used in GIS graphics)                    |
+// | location.longitude        | DOUBLE    |    |     |             | Coordinates of the Location for positioning in graphics (only used in GIS graphics)                    |
+// | location.altitude         | DOUBLE    |    |     |             | Coordinates of the Location for positioning in graphics (only used in GIS graphics)                    |
+// | location.edittime         | TIME      |    |     |             | Date and time of last change of the definition                                                         |
+// | location.edittime.unix    | TIMESTAMP | X  |     |             | Date and time of last change of the definition (unix timestamp)                                        |
+// | location.edituser         | STRING    |    |     |             | User code who made the last change                                                                     |
+// +---------------------------+-----------+----+-----+-------------+--------------------------------------------------------------------------------------------------------+
+//
+// Please note the specific language /lng is only used, if /fmt=ui is set. If /fmt=ui is not set, the untranslated string is transmitted.
+//
+// ---------------------------- Station ----------------------------
+//
+// Possible values for '<>' placeholders
+// +---------------------------+-----------+----+-----+-------------+------------------------------------------------------------------------------------------------+
+// | Name                      | Type      | Ui | Lng | Filter      | Description                                                                                    |
+// +---------------------------+-----------+----+-----+-------------+------------------------------------------------------------------------------------------------+
+// | station.id                | GUID      |    |     | =,>=,<=,<,> | Database Id of station                                                                         |
+// | station.num               | UINT16    |    |     |             | -                                                                                              |
+// | station.name              | STRING    | X  | X   |             | -                                                                                              |
+// | station.desc              | STRING    | X  | X   |             | -                                                                                              |
+// | station.locationid        | GUID      |    |     |             | Database id of station location                                                                |
+// | station.location.name     | STRING    |    |     |             | Name of station location                                                                       |
+// | station.flags             | UINT16    |    |     |             | -                                                                                              |
+// | station.certificate       | STRING    |    |     |             | -                                                                                              |
+// | station.edittime          | TIME      |    |     |             | Date and time of last change of the definition                                                 |
+// | station.edittime.unix     | TIMESTAMP | X  |  <   |             | Date and time of last change of the definition (unix timestamp)                                |
+// | station.edituser          | STRING    |    |     |             | User code who made the last change                                                             |
+// +---------------------------+-----------+----+-----+-------------+------------------------------------------------------------------------------------------------+
+//
+// Please note the specific language /lng is only used, if /fmt=ui is set. If /fmt=ui is not set, the untranslated string is transmitted.
+//
+// ---------------------------- extension ----------------------------
+//
+// Possible values for '<>' placeholders
+// +--------------------------------+-----------+----+-----+-------------+------------------------------------------------------------------------------------------------+
+// | Name                           | Type      | Ui | Lng | Filter      | Description                                                                                    |
+// +--------------------------------+-----------+----+-----+-------------+------------------------------------------------------------------------------------------------+
+// | extension.id                   | GUID      |    |     | =,>=,<=,<,> | Database Id of extension                                                                       |
+// | extension.segmentid            | GUID      |    |     | =           | Database Id of extension segment                                                               |
+// | extension.segment.name         | STRING    |    |     |             | Name of extension segment                                                                      |
+// | extension.code                 | STRING    |    |     | =           | Unique code of the extension, used in URLs                                                     |
+// | extension.name                 | STRING    | X  | X   |             | -                                                                                              |
+// | extension.desc                 | STRING    | X  | X   |             | -                                                                                              |
+// | extension.module.code          | STRING    |    |     |             | Module code of the associated extension module                                                 |
+// | extension.module.name          | STRING    | X  | X   |             | Name of the associated extension module                                                        |
+// | extension.edittime             | TIME      |    |     |             | Date and time of last change of the definition                                                 |
+// | extension.edittime.unix        | TIMESTAMP | X  |     |             | Date and time of last change of the definition (unix timestamp)                                |
+// | extension.edituser             | STRING    |    |     |             | User code who made the last change                                                             |
+// +--------------------------------+-----------+----+-----+-------------+------------------------------------------------------------------------------------------------+
+//
+// Please note the specific language /lng is only used, if /fmt=ui is set. If /fmt=ui is not set, the untranslated string is transmitted.
+
+[info]
+// The connection string to use, this depends on the ODBC connector used. Instead of a full connection string
+// you can set up a Windows ODBC source and specify the DSN name here (Connection=DSN=MyDSNName).
+// It is recommended to use {ODBC Driver 18 for SQL Server} with the option LongAsMax enabled.
+#Connection=Driver={ODBC Driver 18 for SQL Server};Server=localhost;Database=Ferrero;LongAsMax=yes;TrustServerCertificate=yes;UID=dbwrite;PWD=7Ni@43EL:u~1#1=AMv+U;
+//#Connection=DSN=WinGuard;LongAsMax=yes;
+// The connection timeout to use to connect to the database in seconds. Default is 5 seconds.
+#ConnectionTimeout = 10
+// The query timeout to complete database queries in seconds. Default is 600 seconds, 0 is no timeout.
+#QueryTimeout = 600
+// The delay to use between unsuccessful connection attempts.
+// If no connection could have been established the system will the set amount of seconds between attempting 
+// to connect again. Default is 2 seconds.
+#ReconnectDelay = 2
+// The max. number of SQL statements executed at once.
+// A value of 0 means all individual statements are executed as one big multi-statement.
+// A value of 1 means one statement per execution, which is the default.
+// A value of 100 is recommended especially if the communication with the SQL Server is slow.
+#MaxNumStatementsPerExecution = 1
+#COMMENT="Sample WSE Script for Microsoft SQL Server 2012 - 2022."
+#COMMENT_DE="Beispiel WSE-Skript für Microsoft SQL Server 2012 - 2022."
+// Don't change this value
+// Version1: Field value definition changed. Only string values are enclosed within either single quote (') or double quote (") characters. 
+#Version=2
+
+// The trigger is called after the database connection was established and if the WSE file is set in the WinGuard settings.
+// This is the place to create all the necessary tables for the "on event.update" trigger.
+[on init]
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE id = object_id(N'[dbo].[events]')
+AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+CREATE TABLE [events] (
+  [id] int NOT NULL IDENTITY(1,1) PRIMARY KEY,
+  [event_id] varchar(38) NOT NULL,
+  [event_id_src_num] varchar(26),
+  [segment_id] varchar(38),
+  [segment_name] nvarchar(4000),
+  [type] int,
+  [name] nvarchar(4000),
+  [text] nvarchar(4000),
+  [priority] int,
+  [desc] nvarchar(4000),
+  [tags] varchar(8000),
+  [station_id] int,
+  [accepted_user_code] nvarchar(8),
+  [state_accepted] tinyint,
+  [state_deferred] tinyint,
+  [state_ended] tinyint,
+  [state_completed] tinyint,
+  [state_locked] tinyint,
+  [location_id] varchar(38),
+  [location_name] nvarchar(4000),
+  [datapoint_id] varchar(38),
+  [datapoint_category] varchar(8000),
+  [sensornum] int,
+  [devicetype] varchar(8000),
+  [ext] varchar(8000),
+  [url] nvarchar(4000),
+  [objecttype] nvarchar(4000),
+  [latitude] float(53),
+  [longitude] float(53),
+  [altitude] float(53), 
+  [begin_time] datetime NOT NULL DEFAULT '1970-01-01T00:00:00',
+  [accepted_time] datetime DEFAULT '1970-01-01T00:00:00',
+  [completed_time] datetime DEFAULT '1970-01-01T00:00:00',
+  [completed_user_code] nvarchar(8),
+  [end_time] datetime DEFAULT '1970-01-01T00:00:00',
+  [group_id] varchar(38),
+  [group_count] int,
+  CONSTRAINT index_events UNIQUE ([event_id],[begin_time])
+);
+
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE id = object_id(N'[dbo].[systemlog]')
+AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+CREATE TABLE [systemlog] (
+  [id] int NOT NULL IDENTITY(1,1) PRIMARY KEY,
+  [systemlogentry_id] varchar(38) NOT NULL,
+  [time] datetime NOT NULL DEFAULT '1970-01-01T00:00:00',
+  [station] int,
+  [extension] varchar(8000),
+  [class] int NOT NULL,
+  [class_ui] nvarchar(4000),
+  [category] int NOT NULL,
+  [category_ui] nvarchar(4000),
+  [incident] nvarchar(4000),
+  [incident_ui] nvarchar(4000),
+  [details_1] nvarchar(max),
+  [details_2] nvarchar(max),
+  [usercode] nvarchar(max),
+  [datapoint_id] varchar(38),
+  [event_id] varchar(38),
+  CONSTRAINT index_syslog UNIQUE ([systemlogentry_id])
+);
+
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE id = object_id(N'[dbo].[datapoints]')
+AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+CREATE TABLE [datapoints] (
+  [id] int NOT NULL IDENTITY(1,1) PRIMARY KEY,
+  [datapoint_id] varchar(38) NOT NULL,
+  [parent_id] varchar(38),
+  [segment_id] varchar(38),
+  [segment_name] nvarchar(4000),
+  [datapoint_code] varchar(8000),
+  [category] varchar(8000),
+  [type] nvarchar(4000) NOT NULL,
+  [name] nvarchar(4000) NOT NULL,
+  [desc] nvarchar(4000),
+  [tags] varchar(8000),
+  [location_id] varchar(38),
+  [location_name] nvarchar(4000),
+  [extension_code] varchar(8000),
+  [extension_name] nvarchar(4000),
+  [url] nvarchar(4000),
+  [objecttype] nvarchar(4000),
+  [sensornum] int,
+  [latitude] float(53),
+  [longitude] float(53),
+  [altitude] float(53),
+  [devicetype_code] varchar(8000),
+  [devicetype_name] nvarchar(4000),
+  [text] nvarchar(4000),
+  [textmacro_1] nvarchar(4000),
+  [textmacro_2] nvarchar(4000),
+  [textmacro_3] nvarchar(4000),
+  [textmacro_4] nvarchar(4000),
+  [textmacro_5] nvarchar(4000),
+  [textmacro_6] nvarchar(4000),
+  [graphic_1] nvarchar(max),
+  [graphic_2] nvarchar(max),
+  [graphic_3] nvarchar(max),
+  [graphic_4] nvarchar(max),
+  [graphic_5] nvarchar(max),
+  [graphic_6] nvarchar(max),
+  [notes] nvarchar(4000),
+  [script] nvarchar(4000),
+  [edit_time] datetime DEFAULT '1970-01-01T00:00:00',
+  [edit_user] nvarchar(8),
+  CONSTRAINT index_datapoint UNIQUE ([datapoint_id])
+);
+
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE id = object_id(N'[dbo].[locations]')
+AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+CREATE TABLE [locations] (
+  [id] int NOT NULL IDENTITY(1,1) PRIMARY KEY,
+  [location_id] varchar(38) NOT NULL,
+  [parent_id] varchar(38),
+  [segment_id] varchar(38),
+  [segment_name] nvarchar(4000),
+  [order] varchar(8000),
+  [type] int,
+  [name] nvarchar(254) NOT NULL,
+  [desc] nvarchar(4000),
+  [tags] varchar(8000),
+  [graphic] nvarchar(max),
+  [text] nvarchar(4000),
+  [extref] nvarchar(4000),
+  [latitude] float(53),
+  [longitude] float(53),
+  [altitude] float(53),
+  [edit_time] datetime DEFAULT '1970-01-01T00:00:00',
+  [edit_user] nvarchar(8),
+  CONSTRAINT index_location UNIQUE ([location_id])
+);
+
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE id = object_id(N'[dbo].[stations]')
+AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+CREATE TABLE [stations] (
+  [id] int NOT NULL IDENTITY(1,1) PRIMARY KEY,
+  [station_id] varchar(38) NOT NULL,
+  [num] int NOT NULL,
+  [name] nvarchar(4000) NOT NULL,
+  [desc] nvarchar(4000),
+  [location_id] varchar(38),
+  [location_name] nvarchar(4000),
+  [flags] int,
+  [certificate] varchar(8000),
+  [edit_time] datetime DEFAULT '1970-01-01T00:00:00',
+  [edit_user] nvarchar(8),
+  CONSTRAINT index_station UNIQUE ([station_id])
+);
+
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE id = object_id(N'[dbo].[extensions]')
+AND OBJECTPROPERTY(id, N'IsUserTable') = 1)
+CREATE TABLE [extensions] (
+  [id] int NOT NULL IDENTITY(1,1) PRIMARY KEY,
+  [extension_id] varchar(38) NOT NULL,
+  [segment_id] varchar(38),
+  [segment_name] nvarchar(4000),
+  [code] varchar(8000) NOT NULL,
+  [name] nvarchar(4000) NOT NULL,
+  [desc] nvarchar(4000),
+  [module_code] nvarchar(4000),
+  [edit_time] datetime DEFAULT '1970-01-01T00:00:00',
+  [edit_user] nvarchar(8),
+  CONSTRAINT index_extension UNIQUE ([extension_id])
+);
+
+// This trigger is called after an event changed in WinGuard (new event, event updated, event deleted).
+[on event.update]
+UPDATE [events]
+  SET [event_id] = '<event.id>',
+  [event_id_src_num] = '<event.hrid>',
+  [segment_id] = '<event.segment.id>',
+  [segment_name] = '<event.segment.name>',
+  [type] = <event.type>,
+  [name] = '<event.name>',
+  [text] = '<event.text>',
+  [priority] = <event.priority>,
+  [desc] = '<event.desc>',
+  [tags] = '<event.tags>',
+  [station_id] = <event.station.id>,
+  [accepted_user_code] = '<event.user.code>',
+  [state_accepted] = <event.state.accepted>,
+  [state_deferred] = <event.state.deferred>,
+  [state_ended] = <event.state.ended>,
+  [state_completed] = <event.state.completed>,
+  [state_locked] = <event.state.locked>,
+  [location_id] = '<event.location.id>',
+  [location_name] = '<event.location.name>',
+  [datapoint_id] = '<event.datapoint.id>',
+  [datapoint_category] = '<event.datapoint.category>',
+  [sensornum] = <event.sensornum>,
+  [devicetype] = '<event.devicetype>',
+  [ext] = '<event.link.ext>',
+  [url] = '<event.link.url>',
+  [objecttype] = '<event.link.objtype>',
+  [latitude] = <event.latitude>,
+  [longitude] = <event.longitude>,
+  [altitude] = <event.altitude>, 
+  [begin_time] = (SELECT dateadd(s, <event.begin.time>, '1970-01-01')),
+  [accepted_time] = (SELECT dateadd(s, <event.accepted.time>, '1970-01-01')),
+  [completed_time] = (SELECT dateadd(s, <event.completed.time>, '1970-01-01')),
+  [completed_user_code] = '<event.completed.user.code>',
+  [end_time] = (SELECT dateadd(s, <event.end.time>, '1970-01-01')),
+  [group_id] = '<event.groupid>',
+  [group_count] = <event.groupcount>
+WHERE [event_id] = '<event.id>' AND [begin_time] = (SELECT dateadd(s, <event.begin.time>, '1970-01-01'))
+IF @@ROWCOUNT = 0
+INSERT INTO [events]
+  ([event_id],
+  [event_id_src_num],
+  [segment_id],
+  [segment_name],
+  [type],
+  [name],
+  [text],
+  [priority],
+  [desc],
+  [tags],
+  [station_id],
+  [accepted_user_code],
+  [state_accepted],
+  [state_deferred],
+  [state_ended],
+  [state_completed],
+  [state_locked],
+  [location_id],
+  [location_name],
+  [datapoint_id],
+  [datapoint_category],
+  [sensornum],
+  [devicetype],
+  [ext],
+  [url],
+  [objecttype],
+  [latitude],
+  [longitude],
+  [altitude], 
+  [begin_time],
+  [accepted_time],
+  [completed_time],
+  [completed_user_code],
+  [end_time],
+  [group_id],
+  [group_count])
+VALUES
+  ('<event.id>',
+  '<event.hrid>',
+  '<event.segment.id>',
+  '<event.segment.name>',
+  <event.type>,
+  '<event.name>',
+  '<event.text>',
+  <event.priority>,
+  '<event.desc>',
+  '<event.tags>',
+  <event.station.id>,
+  '<event.user.code>',
+  <event.state.accepted>,
+  <event.state.deferred>,
+  <event.state.ended>,
+  <event.state.completed>,
+  <event.state.locked>,
+  '<event.location.id>',
+  '<event.location.name>',
+  '<event.datapoint.id>',
+  '<event.datapoint.category>',
+  <event.sensornum>,
+  '<event.devicetype>',
+  '<event.link.ext>',
+  '<event.link.url>',
+  '<event.link.objtype>',
+  <event.latitude>,
+  <event.longitude>,
+  <event.altitude>, 
+  (SELECT dateadd(s, <event.begin.time>, '1970-01-01')),
+  (SELECT dateadd(s, <event.accepted.time>, '1970-01-01')),
+  (SELECT dateadd(s, <event.completed.time>, '1970-01-01')),
+  '<event.completed.user.code>',
+  (SELECT dateadd(s, <event.begin.time>, '1970-01-01')),
+  '<event.groupid>',
+  <event.groupcount>);
+
+[on systemlogentry.add]
+UPDATE [systemlog]
+  SET
+  [systemlogentry_id] = '<logentry.id>',
+  [time] = (SELECT dateadd(s, <logentry.time.unix>, '1970-01-01')),
+  [station] = <logentry.station>,
+  [extension] = '<logentry.extension>',
+  [class] = <logentry.class>,
+  [class_ui] = '<logentry.class /fmt=ui>',
+  [category] = <logentry.category>,
+  [category_ui] = '<logentry.category /fmt=ui>',
+  [incident] = '<logentry.incident>',
+  [incident_ui] = '<logentry.incident /fmt=ui>',
+  [details_1] = '<logentry.details1>',
+  [details_2] = '<logentry.details2>',
+  [usercode] = '<logentry.usercode>',
+  [datapoint_id] = '<logentry.datapointid>',
+  [event_id] = '<logentry.eventid>'
+WHERE [systemlogentry_id] = '<logentry.id>'
+IF @@ROWCOUNT = 0
+  INSERT INTO [systemlog]
+  ([systemlogentry_id],
+  [time],
+  [station],
+  [extension],
+  [class],
+  [class_ui],
+  [category],
+  [category_ui],
+  [incident],
+  [incident_ui],
+  [details_1],
+  [details_2],
+  [usercode],
+  [datapoint_id],
+  [event_id])
+VALUES
+  ('<logentry.id>',
+  (SELECT dateadd(s, <logentry.time.unix>, '1970-01-01')),
+  <logentry.station>,
+  '<logentry.extension>',
+  <logentry.class>,
+  '<logentry.class /fmt=ui>',
+  <logentry.category>,
+  '<logentry.category /fmt=ui>',
+  '<logentry.incident>',
+  '<logentry.incident /fmt=ui>',
+  '<logentry.details1>',
+  '<logentry.details2>',
+  '<logentry.usercode>',
+  '<logentry.datapointid>',
+  '<logentry.eventid>');
+
+[on datapoint.update]
+UPDATE [datapoints]
+  SET
+  [datapoint_id] = '<datapoint.id>',
+  [parent_id] = '<datapoint.parentid>',
+  [segment_id] = '<datapoint.segmentid>',
+  [segment_name] = '<datapoint.segment.name>',
+  [datapoint_code] = '<datapoint.code>',
+  [category] = '<datapoint.category>',
+  [type] = '<datapoint.type /fmt=ui>',
+  [name] = '<datapoint.name>',
+  [desc] = '<datapoint.desc>',
+  [tags] = '<datapoint.tags>',
+  [location_id] = '<datapoint.locationid>',
+  [location_name] = '<datapoint.location.name>',
+  [extension_code] = '<datapoint.link.ext.code>',
+  [extension_name] = '<datapoint.link.ext.name>',
+  [url] = '<datapoint.link.url>',
+  [objecttype] = '<datapoint.link.objtype>',
+  [sensornum] =<datapoint.sensornum>,
+  [latitude] = <datapoint.latitude>,
+  [longitude] = <datapoint.longitude>,
+  [altitude] = <datapoint.altitude>,
+  [devicetype_code] = '<datapoint.sensortype>',
+  [devicetype_name] = '<datapoint.devicetype.name>',
+  [text] = '<datapoint.text /fmt=params>',
+  [textmacro_1] = '<datapoint.textmacro /index=1>',
+  [textmacro_2] = '<datapoint.textmacro /index=2>',
+  [textmacro_3] = '<datapoint.textmacro /index=3>',
+  [textmacro_4] = '<datapoint.textmacro /index=4>',
+  [textmacro_5] = '<datapoint.textmacro /index=5>',
+  [textmacro_6] = '<datapoint.textmacro /index=6>',
+  [graphic_1] = '<datapoint.graphic /index=1 /fmt=params>',
+  [graphic_2] = '<datapoint.graphic /index=2 /fmt=params>',
+  [graphic_3] = '<datapoint.graphic /index=3 /fmt=params>',
+  [graphic_4] = '<datapoint.graphic /index=4 /fmt=params>',
+  [graphic_5] = '<datapoint.graphic /index=5 /fmt=params>',
+  [graphic_6] = '<datapoint.graphic /index=6 /fmt=params>',
+  [notes] = '<datapoint.note>',
+  [script] = '<datapoint.script>',
+  [edit_time] = (SELECT dateadd(s, <datapoint.edittime.unix>, '1970-01-01')),
+  [edit_user] = '<datapoint.edituser>'
+WHERE [datapoint_id] = '<datapoint.id>'
+IF @@ROWCOUNT = 0
+  INSERT INTO [datapoints]
+  ([datapoint_id],
+  [parent_id],
+  [segment_id],
+  [segment_name],
+  [datapoint_code],
+  [category],
+  [type],
+  [name],
+  [desc],
+  [tags],
+  [location_id],
+  [location_name],
+  [extension_code],
+  [extension_name],
+  [url],
+  [objecttype],
+  [sensornum],
+  [latitude],
+  [longitude],
+  [altitude],
+  [devicetype_code],
+  [devicetype_name],
+  [text],
+  [textmacro_1],
+  [textmacro_2],
+  [textmacro_3],
+  [textmacro_4],
+  [textmacro_5],
+  [textmacro_6],
+  [graphic_1],
+  [graphic_2],
+  [graphic_3],
+  [graphic_4],
+  [graphic_5],
+  [graphic_6],
+  [notes],
+  [script],
+  [edit_time],
+  [edit_user])
+VALUES
+  ('<datapoint.id>',
+  '<datapoint.parentid>',
+  '<datapoint.segmentid>',
+  '<datapoint.segment.name>',
+  '<datapoint.code>',
+  '<datapoint.category>',
+  '<datapoint.type /fmt=ui>',
+  '<datapoint.name>',
+  '<datapoint.desc>',
+  '<datapoint.tags>',
+  '<datapoint.locationid>',
+  '<datapoint.location.name>',
+  '<datapoint.link.ext.code>',
+  '<datapoint.link.ext.name>',
+  '<datapoint.link.url>',
+  '<datapoint.link.objtype>',
+  <datapoint.sensornum>,
+  <datapoint.latitude>,
+  <datapoint.longitude>,
+  <datapoint.altitude>,
+  '<datapoint.devicetype.code>',
+  '<datapoint.devicetype.name>',
+  '<datapoint.text /fmt=params>',
+  '<datapoint.textmacro /index=1>',
+  '<datapoint.textmacro /index=2>',
+  '<datapoint.textmacro /index=3>',
+  '<datapoint.textmacro /index=4>',
+  '<datapoint.textmacro /index=5>',
+  '<datapoint.textmacro /index=6>',
+  '<datapoint.graphic /index=1 /fmt=params>',
+  '<datapoint.graphic /index=2 /fmt=params>',
+  '<datapoint.graphic /index=3 /fmt=params>',
+  '<datapoint.graphic /index=4 /fmt=params>',
+  '<datapoint.graphic /index=5 /fmt=params>',
+  '<datapoint.graphic /index=6 /fmt=params>',
+  '<datapoint.note>',
+  '<datapoint.script>',
+  (SELECT dateadd(s, <datapoint.edittime.unix>, '1970-01-01')),
+  '<datapoint.edituser>');
+
+[on datapoint.delete]
+DELETE FROM [datapoints] WHERE [datapoint_id] = '<datapoint.id>'; 
+
+[on location.update]
+UPDATE [locations]
+  SET
+  [location_id] = '<location.id>',
+  [parent_id] = '<location.parentid>',
+  [segment_id] = '<location.segmentid>',
+  [segment_name] = '<location.segment.name>',
+  [order] = '<location.order>',
+  [type] = '<location.type>',
+  [name] = '<location.name>',
+  [desc] = '<location.desc>',
+  [tags] = '<location.tags>',
+  [graphic] = '<location.graphic /fmt=params>',
+  [text] = '<location.text /fmt=params>',
+  [extref] = '<location.extref>',
+  [latitude] = <location.latitude>,
+  [longitude] = <location.longitude>,
+  [altitude] = <location.altitude>,
+  [edit_time] = (SELECT dateadd(s, <location.edittime.unix>, '1970-01-01')),
+  [edit_user] = '<location.edituser>'
+WHERE [location_id] = '<location.id>'
+IF @@ROWCOUNT = 0
+INSERT INTO [locations]
+  ([location_id],
+  [parent_id],
+  [segment_id],
+  [segment_name],
+  [order],
+  [type],
+  [name],
+  [desc],
+  [tags],
+  [graphic],
+  [text],
+  [extref],
+  [latitude],
+  [longitude],
+  [altitude],
+  [edit_time],
+  [edit_user])
+VALUES
+  ('<location.id>',
+  '<location.parentid>',
+  '<location.segmentid>',
+  '<location.segment.name>',
+  '<location.order>',
+  '<location.type>',
+  '<location.name>',
+  '<location.desc>',
+  '<location.tags>',
+  '<location.graphic /fmt=params>',
+  '<location.text /fmt=params>',
+  '<location.extref>',
+  <location.latitude>,
+  <location.longitude>,
+  <location.altitude>,
+  (SELECT dateadd(s, <location.edittime.unix>, '1970-01-01')),
+  '<location.edituser>');
+
+[on location.delete]
+DELETE FROM [locations] WHERE [location_id] = '<location.id>';
+
+[on station.update]
+UPDATE [stations]
+  SET
+  [station_id] = '<station.id>',
+  [num] = <station.num>,
+  [name] = '<station.name>',
+  [desc] = '<station.desc>',
+  [location_id] = '<station.locationid>',
+  [location_name] = '<station.location.name>',
+  [flags] = <station.flags>,
+  [certificate] = '<station.certificate>',
+  [edit_time] = (SELECT dateadd(s, <station.edittime.unix>, '1970-01-01')),
+  [edit_user] = '<station.edituser>'
+WHERE [station_id] = '<station.id>'
+IF @@ROWCOUNT = 0
+INSERT INTO [stations]
+  ([station_id],
+  [num],
+  [name],
+  [desc],
+  [location_id],
+  [location_name],
+  [flags],
+  [certificate],
+  [edit_time],
+  [edit_user])
+VALUES
+  ('<station.id>',
+  <station.num>,
+  '<station.name>',
+  '<station.desc>',
+  '<station.locationid>',
+  '<station.location.name>',
+  <station.flags>,
+  '<station.certificate>',
+  (SELECT dateadd(s, <station.edittime.unix>, '1970-01-01')),
+  '<station.edituser>');
+
+[on station.delete]
+DELETE FROM [stations] WHERE [station_id] = '<station.id>';
+
+[on extension.update]
+UPDATE [extensions]
+  SET
+  [extension_id] = '<extension.id>',
+  [segment_id] = '<extension.segmentid>',
+  [segment_name] = '<extension.segment.name>',
+  [code] = '<extension.code>',
+  [name] = '<extension.name>',
+  [desc] = '<extension.desc>',
+  [module_code] = '<extension.module.code>',
+  [edit_time] = (SELECT dateadd(s, <extension.edittime.unix>, '1970-01-01')),
+  [edit_user] = '<extension.edituser>'
+WHERE [extension_id] = '<extension.id>'
+IF @@ROWCOUNT = 0
+INSERT INTO [extensions]
+  ([extension_id],
+  [segment_id],
+  [segment_name],
+  [code],
+  [name],
+  [desc],
+  [module_code],
+  [edit_time],
+  [edit_user])
+VALUES
+  ('<extension.id>',
+  '<extension.segmentid>',
+  '<extension.segment.name>',
+  '<extension.code>',
+  '<extension.name>',
+  '<extension.desc>',
+  '<extension.module.code>',
+  (SELECT dateadd(s, <extension.edittime.unix>, '1970-01-01')),
+  '<extension.edituser>');
+
+[on extension.delete]
+DELETE FROM [extensions] WHERE [extension_id] = '<extension.id>'; 
+
+// This function can be called through the UI and exports the events for the last two weeks
+// into the event table. It can be used for the initial data import.
+[do exporteventslast14days]
+#NAME="Export events (14 days)"
+#NAME_DE="Meldungen exportieren (14 Tage)"
+#COMMENT="Export all events of the last 14 days."
+#COMMENT_DE="Alle Meldungen der letzten 14 Tage exportieren."
+
+<[on init]>
+
+BEGIN TRANSACTION;
+
+FOREACH event( event.begin.time >= time.now - 14 )
+{
+  UPDATE [events]
+  SET [event_id] = '<event.id>',
+  [event_id_src_num] = '<event.hrid>',
+  [segment_id] = '<event.segment.id>',
+  [segment_name] = '<event.segment.name>',
+  [type] = <event.type>,
+  [name] = '<event.name>',
+  [text] = '<event.text>',
+  [priority] = <event.priority>,
+  [desc] = '<event.desc>',
+  [tags] = '<event.tags>',
+  [station_id] = <event.station.id>,
+  [accepted_user_code] = '<event.user.code>',
+  [state_accepted] = <event.state.accepted>,
+  [state_deferred] = <event.state.deferred>,
+  [state_ended] = <event.state.ended>,
+  [state_completed] = <event.state.completed>,
+  [state_locked] = <event.state.locked>,
+  [location_id] = '<event.location.id>',
+  [location_name] = '<event.location.name>',
+  [datapoint_id] = '<event.datapoint.id>',
+  [datapoint_category] = '<event.datapoint.category>',
+  [sensornum] = <event.sensornum>,
+  [devicetype] = '<event.devicetype>',
+  [ext] = '<event.link.ext>',
+  [url] = '<event.link.url>',
+  [objecttype] = '<event.link.objtype>',
+  [latitude] = <event.latitude>,
+  [longitude] = <event.longitude>,
+  [altitude] = <event.altitude>, 
+  [begin_time] = (SELECT dateadd(s, <event.begin.time>, '1970-01-01')),
+  [accepted_time] = (SELECT dateadd(s, <event.accepted.time>, '1970-01-01')),
+  [completed_time] = (SELECT dateadd(s, <event.completed.time>, '1970-01-01')),
+  [completed_user_code] = '<event.completed.user.code>',
+  [end_time] = (SELECT dateadd(s, <event.end.time>, '1970-01-01')),
+  [group_id] = '<event.groupid>',
+  [group_count] = <event.groupcount>
+WHERE [event_id] = '<event.id>' AND [begin_time] = (SELECT dateadd(s, <event.begin.time>, '1970-01-01'))
+IF @@ROWCOUNT = 0
+INSERT INTO [events]
+  ([event_id],
+  [event_id_src_num],
+  [segment_id],
+  [segment_name],
+  [type],
+  [name],
+  [text],
+  [priority],
+  [desc],
+  [tags],
+  [station_id],
+  [accepted_user_code],
+  [state_accepted],
+  [state_deferred],
+  [state_ended],
+  [state_completed],
+  [state_locked],
+  [location_id],
+  [location_name],
+  [datapoint_id],
+  [datapoint_category],
+  [sensornum],
+  [devicetype],
+  [ext],
+  [url],
+  [objecttype],
+  [latitude],
+  [longitude],
+  [altitude], 
+  [begin_time],
+  [accepted_time],
+  [completed_time],
+  [completed_user_code],
+  [end_time],
+  [group_id],
+  [group_count])
+VALUES
+  ('<event.id>',
+  '<event.hrid>',
+  '<event.segment.id>',
+  '<event.segment.name>',
+  <event.type>,
+  '<event.name>',
+  '<event.text>',
+  <event.priority>,
+  '<event.desc>',
+  '<event.tags>',
+  <event.station.id>,
+  '<event.user.code>',
+  <event.state.accepted>,
+  <event.state.deferred>,
+  <event.state.ended>,
+  <event.state.completed>,
+  <event.state.locked>,
+  '<event.location.id>',
+  '<event.location.name>',
+  '<event.datapoint.id>',
+  '<event.datapoint.category>',
+  <event.sensornum>,
+  '<event.devicetype>',
+  '<event.link.ext>',
+  '<event.link.url>',
+  '<event.link.objtype>',
+  <event.latitude>,
+  <event.longitude>,
+  <event.altitude>, 
+  (SELECT dateadd(s, <event.begin.time>, '1970-01-01')),
+  (SELECT dateadd(s, <event.accepted.time>, '1970-01-01')),
+  (SELECT dateadd(s, <event.completed.time>, '1970-01-01')),
+  '<event.completed.user.code>',
+  (SELECT dateadd(s, <event.begin.time>, '1970-01-01')),
+  '<event.groupid>',
+  <event.groupcount>);
+}
+
+COMMIT TRANSACTION;
+
+//START PFUSCH Simon
+// This function can be called through the UI and exports the events for the last one year
+// into the event table. It can be used for the initial data import.
+[do exporteventslast365days]
+#NAME="Export events (365 days)"
+#NAME_DE="Meldungen exportieren (365 Tage)"
+#COMMENT="Export all events of the last 365 days."
+#COMMENT_DE="Alle Meldungen der letzten 365 Tage exportieren."
+
+<[on init]>
+
+BEGIN TRANSACTION;
+
+FOREACH event( event.begin.time >= time.now - 365 )
+{
+  UPDATE [events]
+  SET [event_id] = '<event.id>',
+  [event_id_src_num] = '<event.hrid>',
+  [segment_id] = '<event.segment.id>',
+  [segment_name] = '<event.segment.name>',
+  [type] = <event.type>,
+  [name] = '<event.name>',
+  [text] = '<event.text>',
+  [priority] = <event.priority>,
+  [desc] = '<event.desc>',
+  [tags] = '<event.tags>',
+  [station_id] = <event.station.id>,
+  [accepted_user_code] = '<event.user.code>',
+  [state_accepted] = <event.state.accepted>,
+  [state_deferred] = <event.state.deferred>,
+  [state_ended] = <event.state.ended>,
+  [state_completed] = <event.state.completed>,
+  [state_locked] = <event.state.locked>,
+  [location_id] = '<event.location.id>',
+  [location_name] = '<event.location.name>',
+  [datapoint_id] = '<event.datapoint.id>',
+  [datapoint_category] = '<event.datapoint.category>',
+  [sensornum] = <event.sensornum>,
+  [devicetype] = '<event.devicetype>',
+  [ext] = '<event.link.ext>',
+  [url] = '<event.link.url>',
+  [objecttype] = '<event.link.objtype>',
+  [latitude] = <event.latitude>,
+  [longitude] = <event.longitude>,
+  [altitude] = <event.altitude>, 
+  [begin_time] = (SELECT dateadd(s, <event.begin.time>, '1970-01-01')),
+  [accepted_time] = (SELECT dateadd(s, <event.accepted.time>, '1970-01-01')),
+  [completed_time] = (SELECT dateadd(s, <event.completed.time>, '1970-01-01')),
+  [completed_user_code] = '<event.completed.user.code>',
+  [end_time] = (SELECT dateadd(s, <event.end.time>, '1970-01-01')),
+  [group_id] = '<event.groupid>',
+  [group_count] = <event.groupcount>
+WHERE [event_id] = '<event.id>' AND [begin_time] = (SELECT dateadd(s, <event.begin.time>, '1970-01-01'))
+IF @@ROWCOUNT = 0
+INSERT INTO [events]
+  ([event_id],
+  [event_id_src_num],
+  [segment_id],
+  [segment_name],
+  [type],
+  [name],
+  [text],
+  [priority],
+  [desc],
+  [tags],
+  [station_id],
+  [accepted_user_code],
+  [state_accepted],
+  [state_deferred],
+  [state_ended],
+  [state_completed],
+  [state_locked],
+  [location_id],
+  [location_name],
+  [datapoint_id],
+  [datapoint_category],
+  [sensornum],
+  [devicetype],
+  [ext],
+  [url],
+  [objecttype],
+  [latitude],
+  [longitude],
+  [altitude], 
+  [begin_time],
+  [accepted_time],
+  [completed_time],
+  [completed_user_code],
+  [end_time],
+  [group_id],
+  [group_count])
+VALUES
+  ('<event.id>',
+  '<event.hrid>',
+  '<event.segment.id>',
+  '<event.segment.name>',
+  <event.type>,
+  '<event.name>',
+  '<event.text>',
+  <event.priority>,
+  '<event.desc>',
+  '<event.tags>',
+  <event.station.id>,
+  '<event.user.code>',
+  <event.state.accepted>,
+  <event.state.deferred>,
+  <event.state.ended>,
+  <event.state.completed>,
+  <event.state.locked>,
+  '<event.location.id>',
+  '<event.location.name>',
+  '<event.datapoint.id>',
+  '<event.datapoint.category>',
+  <event.sensornum>,
+  '<event.devicetype>',
+  '<event.link.ext>',
+  '<event.link.url>',
+  '<event.link.objtype>',
+  <event.latitude>,
+  <event.longitude>,
+  <event.altitude>, 
+  (SELECT dateadd(s, <event.begin.time>, '1970-01-01')),
+  (SELECT dateadd(s, <event.accepted.time>, '1970-01-01')),
+  (SELECT dateadd(s, <event.completed.time>, '1970-01-01')),
+  '<event.completed.user.code>',
+  (SELECT dateadd(s, <event.begin.time>, '1970-01-01')),
+  '<event.groupid>',
+  <event.groupcount>);
+}
+
+COMMIT TRANSACTION;
+//ENDE PFUSCH Simon
+
+
+// This function can be called through the UI and exports the system log for the last two weeks
+// into the system log table. It can be used for the initial data import.
+[do exportsystemloglast14days]
+#NAME="Export system log (14 days)"
+#NAME_DE="Systemprotokoll exportieren (14 Tage)"
+#COMMENT="Export all system log entries of the last 14 days."
+#COMMENT_DE="Alle Systemprotokolleinträge der letzten 14 Tage exportieren."
+
+<[on init]>
+
+BEGIN TRANSACTION;
+
+FOREACH systemlogentry( logentry.time >= time.now - 14 )
+{
+  UPDATE [systemlog]
+  SET
+  [systemlogentry_id] = '<logentry.id>',
+  [time] = (SELECT dateadd(s, <logentry.time.unix>, '1970-01-01')),
+  [station] = <logentry.station>,
+  [extension] = '<logentry.extension>',
+  [class] = <logentry.class>,
+  [class_ui] = '<logentry.class /fmt=ui>',
+  [category] = <logentry.category>,
+  [category_ui] = '<logentry.category /fmt=ui>',
+  [incident] = '<logentry.incident>',
+  [incident_ui] = '<logentry.incident /fmt=ui>',
+  [details_1] = '<logentry.details1>',
+  [details_2] = '<logentry.details2>',
+  [usercode] = '<logentry.usercode>',
+  [datapoint_id] = '<logentry.datapointid>',
+  [event_id] = '<logentry.eventid>'
+WHERE [systemlogentry_id] = '<logentry.id>'
+IF @@ROWCOUNT = 0
+  INSERT INTO [systemlog]
+  ([systemlogentry_id],
+  [time],
+  [station],
+  [extension],
+  [class],
+  [class_ui],
+  [category],
+  [category_ui],
+  [incident],
+  [incident_ui],
+  [details_1],
+  [details_2],
+  [usercode],
+  [datapoint_id],
+  [event_id])
+VALUES
+  ('<logentry.id>',
+  (SELECT dateadd(s, <logentry.time.unix>, '1970-01-01')),
+  <logentry.station>,
+  '<logentry.extension>',
+  <logentry.class>,
+  '<logentry.class /fmt=ui>',
+  <logentry.category>,
+  '<logentry.category /fmt=ui>',
+  '<logentry.incident>',
+  '<logentry.incident /fmt=ui>',
+  '<logentry.details1>',
+  '<logentry.details2>',
+  '<logentry.usercode>',
+  '<logentry.datapointid>',
+  '<logentry.eventid>');
+}
+
+COMMIT TRANSACTION;
+
+//PFUSCH SYSTEM LOG SIMON BEGIN
+// This function can be called through the UI and exports the system log for the last one year
+// into the system log table. It can be used for the initial data import.
+[do exportsystemloglast356days]
+#NAME="Export system log (356 days)"
+#NAME_DE="Systemprotokoll exportieren (356 Tage)"
+#COMMENT="Export all system log entries of the last 356 days."
+#COMMENT_DE="Alle Systemprotokolleinträge der letzten 356 Tage exportieren."
+
+<[on init]>
+
+BEGIN TRANSACTION;
+
+FOREACH systemlogentry( logentry.time >= time.now - 356 )
+{
+  UPDATE [systemlog]
+  SET
+  [systemlogentry_id] = '<logentry.id>',
+  [time] = (SELECT dateadd(s, <logentry.time.unix>, '1970-01-01')),
+  [station] = <logentry.station>,
+  [extension] = '<logentry.extension>',
+  [class] = <logentry.class>,
+  [class_ui] = '<logentry.class /fmt=ui>',
+  [category] = <logentry.category>,
+  [category_ui] = '<logentry.category /fmt=ui>',
+  [incident] = '<logentry.incident>',
+  [incident_ui] = '<logentry.incident /fmt=ui>',
+  [details_1] = '<logentry.details1>',
+  [details_2] = '<logentry.details2>',
+  [usercode] = '<logentry.usercode>',
+  [datapoint_id] = '<logentry.datapointid>',
+  [event_id] = '<logentry.eventid>'
+WHERE [systemlogentry_id] = '<logentry.id>'
+IF @@ROWCOUNT = 0
+  INSERT INTO [systemlog]
+  ([systemlogentry_id],
+  [time],
+  [station],
+  [extension],
+  [class],
+  [class_ui],
+  [category],
+  [category_ui],
+  [incident],
+  [incident_ui],
+  [details_1],
+  [details_2],
+  [usercode],
+  [datapoint_id],
+  [event_id])
+VALUES
+  ('<logentry.id>',
+  (SELECT dateadd(s, <logentry.time.unix>, '1970-01-01')),
+  <logentry.station>,
+  '<logentry.extension>',
+  <logentry.class>,
+  '<logentry.class /fmt=ui>',
+  <logentry.category>,
+  '<logentry.category /fmt=ui>',
+  '<logentry.incident>',
+  '<logentry.incident /fmt=ui>',
+  '<logentry.details1>',
+  '<logentry.details2>',
+  '<logentry.usercode>',
+  '<logentry.datapointid>',
+  '<logentry.eventid>');
+}
+
+COMMIT TRANSACTION;
+
+
+//PUSCH SYSTEM LOG SIMON ENDE
+// This function can be called through the UI and exports the project data
+// into the project tables. It can be used for the initial data import.
+[do exportprojectdata]
+#NAME="Export project data"
+#NAME_DE="Projektdaten exportieren"
+#COMMENT="Export project data."
+#COMMENT_DE="Projektdaten exportieren."
+
+<[on init]>
+
+BEGIN TRANSACTION;
+
+FOREACH datapoint( datapoint.category > 0 )
+{
+  UPDATE [datapoints]
+  SET
+  [datapoint_id] = '<datapoint.id>',
+  [parent_id] = '<datapoint.parentid>',
+  [segment_id] = '<datapoint.segmentid>',
+  [segment_name] = '<datapoint.segment.name>',
+  [datapoint_code] = '<datapoint.code>',
+  [category] = '<datapoint.category>',
+  [type] = '<datapoint.type /fmt=ui>',
+  [name] = '<datapoint.name>',
+  [desc] = '<datapoint.desc>',
+  [tags] = '<datapoint.tags>',
+  [location_id] = '<datapoint.locationid>',
+  [location_name] = '<datapoint.location.name>',
+  [extension_code] = '<datapoint.link.ext.code>',
+  [extension_name] = '<datapoint.link.ext.name>',
+  [url] = '<datapoint.link.url>',
+  [objecttype] = '<datapoint.link.objtype>',
+  [sensornum] =<datapoint.sensornum>,
+  [latitude] = <datapoint.latitude>,
+  [longitude] = <datapoint.longitude>,
+  [altitude] = <datapoint.altitude>,
+  [devicetype_code] = '<datapoint.sensortype>',
+  [devicetype_name] = '<datapoint.devicetype.name>',
+  [text] = '<datapoint.text /fmt=params>',
+  [textmacro_1] = '<datapoint.textmacro /index=1>',
+  [textmacro_2] = '<datapoint.textmacro /index=2>',
+  [textmacro_3] = '<datapoint.textmacro /index=3>',	
+  [textmacro_4] = '<datapoint.textmacro /index=4>',
+  [textmacro_5] = '<datapoint.textmacro /index=5>',
+  [textmacro_6] = '<datapoint.textmacro /index=6>',
+  [graphic_1] = '<datapoint.graphic /index=1 /fmt=params>',
+  [graphic_2] = '<datapoint.graphic /index=2 /fmt=params>',
+  [graphic_3] = '<datapoint.graphic /index=3 /fmt=params>',
+  [graphic_4] = '<datapoint.graphic /index=4 /fmt=params>',
+  [graphic_5] = '<datapoint.graphic /index=5 /fmt=params>',
+  [graphic_6] = '<datapoint.graphic /index=6 /fmt=params>',
+  [notes] = '<datapoint.note>',
+  [script] = '<datapoint.script>',
+  [edit_time] = (SELECT dateadd(s, <datapoint.edittime.unix>, '1970-01-01')),
+  [edit_user] = '<datapoint.edituser>'
+WHERE [datapoint_id] = '<datapoint.id>'
+IF @@ROWCOUNT = 0
+  INSERT INTO [datapoints]
+  ([datapoint_id],
+  [parent_id],
+  [segment_id],
+  [segment_name],
+  [datapoint_code],
+  [category],
+  [type],
+  [name],
+  [desc],
+  [tags],
+  [location_id],
+  [location_name],
+  [extension_code],
+  [extension_name],
+  [url],
+  [objecttype],
+  [sensornum],
+  [latitude],
+  [longitude],
+  [altitude],
+  [devicetype_code],
+  [devicetype_name],
+  [text],
+  [textmacro_1],
+  [textmacro_2],
+  [textmacro_3],
+  [textmacro_4],
+  [textmacro_5],
+  [textmacro_6],
+  [graphic_1],
+  [graphic_2],
+  [graphic_3],
+  [graphic_4],
+  [graphic_5],
+  [graphic_6],
+  [notes],
+  [script],
+  [edit_time],
+  [edit_user])
+VALUES
+  ('<datapoint.id>',
+  '<datapoint.parentid>',
+  '<datapoint.segmentid>',
+  '<datapoint.segment.name>',
+  '<datapoint.code>',
+  '<datapoint.category>',
+  '<datapoint.type /fmt=ui>',
+  '<datapoint.name>',
+  '<datapoint.desc>',
+  '<datapoint.tags>',
+  '<datapoint.locationid>',
+  '<datapoint.location.name>',
+  '<datapoint.link.ext.code>',
+  '<datapoint.link.ext.name>',
+  '<datapoint.link.url>',
+  '<datapoint.link.objtype>',
+  <datapoint.sensornum>,
+  <datapoint.latitude>,
+  <datapoint.longitude>,
+  <datapoint.altitude>,
+  '<datapoint.devicetype.code>',
+  '<datapoint.devicetype.name>',
+  '<datapoint.text /fmt=params>',
+  '<datapoint.textmacro /index=1>',
+  '<datapoint.textmacro /index=2>',
+  '<datapoint.textmacro /index=3>',
+  '<datapoint.textmacro /index=4>',
+  '<datapoint.textmacro /index=5>',
+  '<datapoint.textmacro /index=6>',
+  '<datapoint.graphic /index=1 /fmt=params>',
+  '<datapoint.graphic /index=2 /fmt=params>',
+  '<datapoint.graphic /index=3 /fmt=params>',
+  '<datapoint.graphic /index=4 /fmt=params>',
+  '<datapoint.graphic /index=5 /fmt=params>',
+  '<datapoint.graphic /index=6 /fmt=params>',
+  '<datapoint.note>',
+  '<datapoint.script>',
+  (SELECT dateadd(s, <datapoint.edittime.unix>, '1970-01-01')),
+  '<datapoint.edituser>');
+}
+
+FOREACH location( location.id > 0 )
+{
+  UPDATE [locations]
+  SET
+  [location_id] = '<location.id>',
+  [parent_id] = '<location.parentid>',
+  [segment_id] = '<location.segmentid>',
+  [segment_name] = '<location.segment.name>',
+  [order] = '<location.order>',
+  [type] = '<location.type>',
+  [name] = '<location.name>',
+  [desc] = '<location.desc>',
+  [tags] = '<location.tags>',
+  [graphic] = '<location.graphic /fmt=params>',
+  [text] = '<location.text /fmt=params>',
+  [extref] = '<location.extref>',
+  [latitude] = <location.latitude>,
+  [longitude] = <location.longitude>,
+  [altitude] = <location.altitude>,
+  [edit_time] = (SELECT dateadd(s, <location.edittime.unix>, '1970-01-01')),
+  [edit_user] = '<location.edituser>'
+WHERE [location_id] = '<location.id>'
+IF @@ROWCOUNT = 0
+INSERT INTO [locations]
+  ([location_id],
+  [parent_id],
+  [segment_id],
+  [segment_name],
+  [order],
+  [type],
+  [name],
+  [desc],
+  [tags],
+  [graphic],
+  [text],
+  [extref],
+  [latitude],
+  [longitude],
+  [altitude],
+  [edit_time],
+  [edit_user])
+VALUES
+  ('<location.id>',
+  '<location.parentid>',
+  '<location.segmentid>',
+  '<location.segment.name>',
+  '<location.order>',
+  '<location.type>',
+  '<location.name>',
+  '<location.desc>',
+  '<location.tags>',
+  '<location.graphic /fmt=params>',
+  '<location.text /fmt=params>',
+  '<location.extref>',
+  <location.latitude>,
+  <location.longitude>,
+  <location.altitude>,
+  (SELECT dateadd(s, <location.edittime.unix>, '1970-01-01')),
+  '<location.edituser>');
+}
+
+FOREACH station( station.id > 0 )
+{
+  UPDATE [stations]
+  SET
+  [station_id] = '<station.id>',
+  [num] = <station.num>,
+  [name] = '<station.name>',
+  [desc] = '<station.desc>',
+  [location_id] = '<station.locationid>',
+  [location_name] = '<station.location.name>',
+  [flags] = <station.flags>,
+  [certificate] = '<station.certificate>',
+  [edit_time] = (SELECT dateadd(s, <station.edittime.unix>, '1970-01-01')),
+  [edit_user] = '<station.edituser>'
+WHERE [station_id] = '<station.id>'
+IF @@ROWCOUNT = 0
+INSERT INTO [stations]
+  ([station_id],
+  [num],
+  [name],
+  [desc],
+  [location_id],
+  [location_name],
+  [flags],
+  [certificate],
+  [edit_time],
+  [edit_user])
+VALUES
+  ('<station.id>',
+  <station.num>,
+  '<station.name>',
+  '<station.desc>',
+  '<station.locationid>',
+  '<station.location.name>',
+  <station.flags>,
+  '<station.certificate>',
+  (SELECT dateadd(s, <station.edittime.unix>, '1970-01-01')),
+  '<station.edituser>');
+}
+
+FOREACH extension( extension.id > 0 )
+{
+  UPDATE [extensions]
+  SET
+  [extension_id] = '<extension.id>',
+  [segment_id] = '<extension.segmentid>',
+  [segment_name] = '<extension.segment.name>',
+  [code] = '<extension.code>',
+  [name] = '<extension.name>',
+  [desc] = '<extension.desc>',
+  [module_code] = '<extension.module.code>',
+  [edit_time] = (SELECT dateadd(s, <extension.edittime.unix>, '1970-01-01')),
+  [edit_user] = '<extension.edituser>'
+WHERE [extension_id] = '<extension.id>'
+IF @@ROWCOUNT = 0
+INSERT INTO [extensions]
+  ([extension_id],
+  [segment_id],
+  [segment_name],
+  [code],
+  [name],
+  [desc],
+  [module_code],
+  [edit_time],
+  [edit_user])
+VALUES
+  ('<extension.id>',
+  '<extension.segmentid>',
+  '<extension.segment.name>',
+  '<extension.code>',
+  '<extension.name>',
+  '<extension.desc>',
+  '<extension.module.code>',
+  (SELECT dateadd(s, <extension.edittime.unix>, '1970-01-01')),
+  '<extension.edituser>');
+}
+
+COMMIT TRANSACTION;

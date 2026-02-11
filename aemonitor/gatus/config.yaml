@@ -1,0 +1,96 @@
+metrics: true
+concurrency: 10
+endpoints:
+  - name: AD DC 01
+    url: "tcp://AEDC01:389"
+    group: CORE Networking
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: AD DC 02
+    url: "tcp://AEDC02:389"
+    group: CORE Networking
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: DNS Service DC 01
+    group: CORE Networking
+    url: tcp://AEDC01:53
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: DNS Service DC 02
+    group: CORE Networking
+    url: tcp://AEDC02:53
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: DHCP Server
+    group: CORE Networking
+    url: icmp://aedhcp01
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: Cert Authority
+    group: CORE Services
+    url: http://aecert01.ae.int/certsrv
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: MDT Service
+    group: CORE Services
+    url: tcp://AEMDT01:445
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: AEDEMOSQL01
+    group: DEMO
+    url: tcp://AEDEMOSQL01:1433
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: AEDEMOSQL01
+    group: TEST
+    url: tcp://AETESTSQL01:1433
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: Sandoz SQL Server
+    group: PROD
+    url: tcp://SDZ-PWDATA:1433
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: Sandoz ProWatch Port 
+    group: PROD
+    url: tcp://SANDOZPROWATCH:3001
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: Sandoz Intelligent Command
+    group: PROD
+    url: tcp://SANDOZPROWATCH:443
+    interval: 60s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: Sandoz Maedic Health
+    group: PROD
+    url: http://SANDOZPROWATCH:3001/v1/health
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+
+
+
