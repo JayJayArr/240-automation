@@ -23,7 +23,7 @@ services:
       - prometheus-data:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
-      - "--storage.tsdb.retention.time=30d"
+      # - "--storage.tsdb.retention.time=30d"
     networks:
       - monitoring
 
