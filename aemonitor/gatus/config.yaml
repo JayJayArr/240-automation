@@ -71,7 +71,7 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
-  - name: Sandoz ProWatch Port 
+  - name: Sandoz ProWatch Port
     group: PROD
     url: tcp://SANDOZPROWATCH:3001
     interval: 60s
@@ -84,13 +84,3 @@ endpoints:
     interval: 60s
     conditions:
       - "[CONNECTED] == true"
-
-  - name: Sandoz Maedic Health
-    group: PROD
-    url: http://SANDOZPROWATCH:3001/v1/health
-    interval: 60s
-    conditions:
-      - "[STATUS] == 200"
-
-
-
