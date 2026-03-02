@@ -57,7 +57,7 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
-  - name: AEDEMOSQL01
+  - name: AETESTSQL01
     group: TEST
     url: tcp://AETESTSQL01:1433
     interval: 60s
