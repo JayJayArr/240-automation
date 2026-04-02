@@ -12,6 +12,13 @@ scrape_configs:
     static_configs:
       - targets: ["gatus:8080"]
 
+  - job_name: "pw_metrics_sandoz"
+    scrape_interval: 60s
+    scheme: http
+    metrics_path: "/v1/metrics"
+    static_configs:
+      - targets: ["SANDOZPROWATCH:3000"]
+
   - job_name: "dns-a-windows"
     dns_sd_configs:
       - names:
