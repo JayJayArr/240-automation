@@ -17,7 +17,7 @@ scrape_configs:
     scheme: http
     metrics_path: "/v1/metrics"
     static_configs:
-      - targets: ["SANDOZPROWATCH:3000"]
+      - targets: ["SANDOZPROWATCH.ae.int:3000"]
 
   - job_name: "dns-a-windows"
     dns_sd_configs:
