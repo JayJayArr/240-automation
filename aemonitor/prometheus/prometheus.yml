@@ -27,6 +27,7 @@ scrape_configs:
           - "AEDHCP01.ae.int"
           - "AEVEEAM01.ae.int"
           - "AECERT01.ae.int"
+          - "AEPROWATCH65.ae.int"
           - "AEPROWATCH65SEC.ae.int"
           - "SANDOZPROWATCH.ae.int"
           - "SDZ-PWDATA.ae.int"
