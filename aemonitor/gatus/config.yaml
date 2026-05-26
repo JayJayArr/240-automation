@@ -50,19 +50,19 @@ endpoints:
     conditions:
       - "[CONNECTED] == true"
 
-  - name: AEDEMOSQL01
-    group: DEMO
-    url: tcp://AEDEMOSQL01:1433
-    interval: 60s
-    conditions:
-      - "[CONNECTED] == true"
+  # - name: AEDEMOSQL01
+  #   group: DEMO
+  #   url: tcp://AEDEMOSQL01:1433
+  #   interval: 60s
+  #   conditions:
+  #     - "[CONNECTED] == true"
 
-  - name: AETESTSQL01
-    group: TEST
-    url: tcp://AETESTSQL01:1433
-    interval: 60s
-    conditions:
-      - "[CONNECTED] == true"
+  # - name: AETESTSQL01
+  #   group: TEST
+  #   url: tcp://AETESTSQL01:1433
+  #   interval: 60s
+  #   conditions:
+  #     - "[CONNECTED] == true"
 
   - name: Sandoz SQL Server
     group: PROD
