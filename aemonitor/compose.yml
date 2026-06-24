@@ -9,7 +9,6 @@ services:
       - ./gatus:/config
     networks:
       - monitoring
-
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -23,11 +22,10 @@ services:
       - prometheus-data:/prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
-      # - "--storage.tsdb.retention.time=30d"
+      - "--storage.tsdb.retention.time=30d"
       - "--web.enable-otlp-receiver"
     networks:
       - monitoring
-
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -47,7 +45,6 @@ services:
       - grafana-data:/var/lib/grafana
     networks:
       - monitoring
-
   nginx:
     container_name: nginx
     restart: unless-stopped
@@ -61,13 +58,11 @@ services:
       - ./nginx/:/etc/nginx
     networks:
       - monitoring
-
 volumes:
   prometheus-data:
     external: true
   grafana-data:
     external: true
-
 networks:
   monitoring:
     driver: bridge
