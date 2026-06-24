@@ -28,7 +28,23 @@ scrape_configs:
           - "AEWINGUARD01.ae.int"
           - "SANDOZPROWATCH.ae.int"
           - "SDZ-PWDATA.ae.int"
+          - "AEDEMOSERVER01.ae.int"
+          - "AEAIM01.ae.int"
+          - "AEVMS01.ae.int"
+          - "AEVMS02.ae.int"
+          - "AEREC01.ae.int"
+          - "AEREC02.ae.int"
+          - "AEFAILREC01.ae.int"
+          - "AEVMSMOBILE01.ae.int"
+          - "AESST01.ae.int"
+          - "AEMSSQL01.ae.int"
         type: A
+        port: 9182
+  - job_name: "non-domain-components"
+    scheme: http
+    static_configs:
+      # VMS REMOTE
+      - targets: ["10.10.240.47:9182"]
         port: 9182
   - job_name: "dns-a-linux"
     dns_sd_configs:
