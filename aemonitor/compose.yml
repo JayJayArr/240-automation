@@ -52,6 +52,8 @@ services:
       - ./nginx/:/etc/nginx
     networks:
       - monitoring
+    healthcheck:
+      test: ["CMD", "curl grafana:3000"]
 volumes:
   prometheus-data:
     external: true
