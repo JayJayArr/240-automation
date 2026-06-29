@@ -53,7 +53,11 @@ services:
     networks:
       - monitoring
     healthcheck:
-      test: ["curl grafana:3000"]
+      test:
+        [
+          "CMD",
+          "curl --silent --fail http://grafana:3000/ > /dev/null || exit 1",
+        ]
 volumes:
   prometheus-data:
     external: true
