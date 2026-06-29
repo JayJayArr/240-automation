@@ -14,7 +14,8 @@ services:
     depends_on:
       - gatus
     healthcheck:
-      test: ["CMD-SHELL", "wget http://localhost:9090/ > /dev/null ||exit 1"]
+      test:
+        ["CMD-SHELL", "wget http://localhost:9090/targets > /dev/null ||exit 1"]
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
