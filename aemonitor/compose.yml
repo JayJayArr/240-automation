@@ -13,6 +13,8 @@ services:
     restart: unless-stopped
     depends_on:
       - gatus
+    healthcheck:
+      test: ["CMD", "wget", "http://localhost:9090/"]
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
@@ -28,6 +30,12 @@ services:
     restart: unless-stopped
     depends_on:
       - prometheus
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl --silent --fail http://localhost:3000/ > /dev/null || exit 1",
+        ]
     environment:
       - GF_SERVER_ROOT_URL=https://10.10.240.11
       - GF_PLUGINS_PREINSTALL=grafana-clock-panel
