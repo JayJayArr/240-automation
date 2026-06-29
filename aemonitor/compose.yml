@@ -37,8 +37,12 @@ services:
       - monitoring
   nginx:
     container_name: nginx
-    restart: unless-stopped
+    restart: always
     image: nginx:latest
+    depends_on:
+      - grafana
+      - gatus
+      - prometheus
     ports:
       - "80:80"
       - "443:443"
