@@ -46,11 +46,9 @@ scrape_configs:
     dns_sd_configs:
       - names:
           - "AEMONITOR01.ae.int"
-          - "AEPATCHMON01.ae.int"
+          # - "AEPATCHMON01.ae.int"
         type: A
         port: 9100
 storage:
   tsdb:
-    # retention:
-    #   time: 30d
     out_of_order_time_window: 30m
