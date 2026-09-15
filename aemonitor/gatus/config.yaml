@@ -43,20 +43,7 @@ endpoints:
     interval: 60s
     conditions:
       - "[CONNECTED] == true"
-  # - name: AETESTSQL01
-  #   group: TEST
-  #   url: tcp://AETESTSQL01:1433
-  #   interval: 60s
-  #   conditions:
-  #     - "[CONNECTED] == true"
   - name: Sandoz SQL Server
-    # - name: AEDEMOSQL01
-    #   group: DEMO
-    #   url: tcp://AEDEMOSQL01:1433
-    #   interval: 60s
-    #   conditions:
-    #     - "[CONNECTED] == true"
-
     group: PROD
     url: tcp://SDZ-PWDATA:1433
     interval: 60s
@@ -76,18 +63,19 @@ endpoints:
       insecure: true
     conditions:
       - "[CONNECTED] == true"
-  - name: Sandoz Intelligent Command Certificate
-    group: PROD
-    url: tls://10.10.240.200:443
+      - "[CERTIFICATE_EXPIRATION] > 48h"
+  - name: AE-Monitor
+    group: CORE
+    url: https://10.10.240.11:443
     interval: 60s
     client:
       insecure: true
     conditions:
       - "[CONNECTED] == true"
       - "[CERTIFICATE_EXPIRATION] > 48h"
-  - name: AE-Monitor certificate
+  - name: AE-Monitor Prometheus
     group: CORE
-    url: tls://10.10.240.11:443
+    url: https://10.10.240.11:9090
     interval: 60s
     client:
       insecure: true
