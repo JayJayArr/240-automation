@@ -78,16 +78,16 @@ endpoints:
       - "[CONNECTED] == true"
   - name: Sandoz Intelligent Command Certificate
     group: PROD
-    url: tls://SANDOZPROWATCH/IntelligentCommand/Signin
+    url: tls://SANDOZPROWATCH:443/IntelligentCommand/Signin
     interval: 60s
     client:
       insecure: true
     conditions:
       - "[CONNECTED] == true"
       - "[CERTIFICATE_EXPIRATION > 7d]"
-  - name: Monitor certificate
+  - name: AE-Monitor certificate
     group: CORE
-    url: tls://10.10.240.11
+    url: tls://10.10.240.11:443
     interval: 60s
     client:
       insecure: true
