@@ -33,10 +33,13 @@ endpoints:
       - "[CONNECTED] == true"
   - name: Cert Authority
     group: CORE Services
-    url: http://aecert01.ae.int/certsrv
+    url: https://aecert01.ae.int/certsrv
+    client:
+      insecure: true
     interval: 60s
     conditions:
       - "[STATUS] == 200"
+      - "[CERTIFICATE_EXPIRATION] > 14d"
   - name: MDT Service
     group: CORE Services
     url: tcp://AEMDT01:445
@@ -63,7 +66,7 @@ endpoints:
       insecure: true
     conditions:
       - "[CONNECTED] == true"
-      - "[CERTIFICATE_EXPIRATION] > 48h"
+      - "[CERTIFICATE_EXPIRATION] > 14d"
   - name: AE-Monitor
     group: CORE
     url: https://10.10.240.11:443
@@ -72,7 +75,7 @@ endpoints:
       insecure: true
     conditions:
       - "[CONNECTED] == true"
-      - "[CERTIFICATE_EXPIRATION] > 48h"
+      - "[CERTIFICATE_EXPIRATION] > 14d"
   - name: AE-Monitor Prometheus
     group: CORE
     url: https://10.10.240.11:9090
@@ -81,4 +84,4 @@ endpoints:
       insecure: true
     conditions:
       - "[CONNECTED] == true"
-      - "[CERTIFICATE_EXPIRATION] > 48h"
+      - "[CERTIFICATE_EXPIRATION] > 14d"
