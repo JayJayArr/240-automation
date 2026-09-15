@@ -70,14 +70,14 @@ endpoints:
       - "[CONNECTED] == true"
   - name: Sandoz Intelligent Command
     group: PROD
-    url: https://SANDOZPROWATCH.ae.int/IntelligentCommand/Signin
+    url: https://SANDOZPROWATCH/IntelligentCommand/Signin
     interval: 60s
     conditions:
       - "[CONNECTED] == true"
       - "[CERTIFICATE_EXPIRTATION > 7d]"
   - name: Monitor
     group: CORE
-    url: https://aemonitor.ae.int
+    url: https://10.10.240.11
     interval: 60s
     conditions:
       - "[CONNECTED] == true"
