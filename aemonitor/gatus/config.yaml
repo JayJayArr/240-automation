@@ -72,6 +72,8 @@ endpoints:
     group: PROD
     url: https://SANDOZPROWATCH/IntelligentCommand/Signin
     interval: 60s
+    client:
+      insecure: true
     conditions:
       - "[CONNECTED] == true"
       - "[CERTIFICATE_EXPIRTATION > 7d]"
@@ -79,6 +81,8 @@ endpoints:
     group: CORE
     url: https://10.10.240.11
     interval: 60s
+    client:
+      insecure: true
     conditions:
       - "[CONNECTED] == true"
       - "[CERTIFICATE_EXPIRTATION > 7d]"
