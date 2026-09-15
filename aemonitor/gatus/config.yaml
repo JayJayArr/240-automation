@@ -76,7 +76,7 @@ endpoints:
       insecure: true
     conditions:
       - "[CONNECTED] == true"
-      - "[CERTIFICATE_EXPIRTATION > 7d]"
+      - "[CERTIFICATE_EXPIRATION > 7d]"
   - name: Monitor
     group: CORE
     url: https://10.10.240.11
@@ -85,4 +85,4 @@ endpoints:
       insecure: true
     conditions:
       - "[CONNECTED] == true"
-      - "[CERTIFICATE_EXPIRTATION > 7d]"
+      - "[CERTIFICATE_EXPIRATION > 7d]"
