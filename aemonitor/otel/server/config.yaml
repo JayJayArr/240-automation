@@ -1,5 +1,5 @@
 receivers:
-  otlp_grpc:
+  otlp/grpc:
     protocols:
       grpc:
         endpoint: 0.0.0.0:4317
@@ -7,10 +7,8 @@ receivers:
           client_ca_file: /etc/otelcol-contrib/certs/ca.pem
           cert_file: /etc/otelcol-contrib/certs/server-cert.pem
           key_file: /etc/otelcol-contrib/certs/server-key.pem
-          insecure: false
           min_version: "1.2"
           # Use Self Signed Certificates
-          insecure_skip_verify: true
 processors:
   memory_limiter:
     check_interval: 1s
@@ -57,11 +55,11 @@ exporters:
 service:
   pipelines:
     traces:
-      receivers: [otlp_grpc]
+      receivers: [otlp/grpc]
       exporters: [otlp/tempo]
     metrics:
-      receivers: [otlp_grpc]
+      receivers: [otlp/grpc]
       exporters: [prometheusremotewrite/prometheus]
     logs:
-      receivers: [otlp_grpc]
+      receivers: [otlp/grpc]
       exporters: [otlphttp/loki]
