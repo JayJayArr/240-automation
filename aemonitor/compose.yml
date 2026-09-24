@@ -117,8 +117,7 @@ services:
       - -config.file=/etc/tempo/tempo.yaml
     volumes:
       - ./tempo/tempo-config.yaml:/etc/tempo/tempo.yaml:ro
-      - tempo-data:/data/tempo
-      - tempo-runtime:/var/tempo
+      - tempo-data:/var/tempo
     # 4317: OTLP/gRPC ingest from the collector.
     # 3200: Tempo HTTP query/API endpoint for services on this Docker network.
     # Neither is published on the host by default.
@@ -134,7 +133,6 @@ volumes:
   # external: true
   loki-data:
   tempo-data:
-  tempo-runtime:
 networks:
   monitoring:
     driver: bridge
