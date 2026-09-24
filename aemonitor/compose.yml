@@ -64,11 +64,77 @@ services:
           "CMD-SHELL",
           "curl --silent --fail http://grafana:3000/ > /dev/null || exit 1",
         ]
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    restart: always
+    env_file: .env
+    command:
+      - --config=/etc/otelcol-contrib/config.yaml
+    ports:
+      - "4317:4317/tcp"
+    environment:
+      LOKI_OTLP_ENDPOINT: ${LOKI_OTLP_ENDPOINT}
+      PROMETHEUS_REMOTE_WRITE_ENDPOINT: ${PROMETHEUS_REMOTE_WRITE_ENDPOINT}
+      TEMPO_OTLP_GRPC_ENDPOINT: ${TEMPO_OTLP_GRPC_ENDPOINT}
+      TEMPO_TLS_INSECURE: ${TEMPO_TLS_INSECURE:-true}
+    volumes:
+      - ./otel/server/config.yaml:/etc/otelcol-contrib/config.yaml:ro
+      - ./otel/certs:/etc/otelcol-contrib/certs:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,noexec,nosuid,nodev
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      - loki
+      - tempo
+    networks:
+      - monitoring
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    restart: always
+    command:
+      - -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki/loki-config.yaml:/etc/loki/local-config.yaml:ro
+      - loki-data:/loki
+    # Loki is not published externally. Other services in this compose file
+    # reach it as http://loki:3100. Add a host port only if an external
+    # Grafana/query client needs direct access.
+    expose:
+      - "3100"
+    networks:
+      - monitoring
+  tempo:
+    image: grafana/tempo:latest
+    container_name: tempo
+    restart: always
+    command:
+      - -config.file=/etc/tempo/tempo.yaml
+    volumes:
+      - ./tempo/tempo-config.yaml:/etc/tempo/tempo.yaml:ro
+      - tempo-data:/data/tempo
+      - tempo-runtime:/var/tempo
+    # 4317: OTLP/gRPC ingest from the collector.
+    # 3200: Tempo HTTP query/API endpoint for services on this Docker network.
+    # Neither is published on the host by default.
+    expose:
+      - "4317"
+      - "3200"
+    networks:
+      - monitoring
 volumes:
   prometheus-data:
     external: true
   grafana-data:
     external: true
+  loki-data:
+  tempo-data:
+  tempo-runtime:
 networks:
   monitoring:
     driver: bridge
