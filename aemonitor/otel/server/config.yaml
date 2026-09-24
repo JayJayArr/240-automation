@@ -1,0 +1,67 @@
+receivers:
+  otlp_grpc:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+        tls:
+          client_ca_file: ./certs/ca.pem
+          cert_file: ./certs/server-cert.pem
+          key_file: ./certs/server-key.pem
+          insecure: false
+          min_version: "1.2"
+          # Use Self Signed Certificates
+          insecure_skip_verify: true
+processors:
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 512
+    spike_limit_mib: 128
+  batch:
+    timeout: 5s
+    send_batch_size: 8192
+exporters:
+  # Loki 3.x native OTLP log ingestion. The exporter appends /v1/logs.
+  otlphttp/loki:
+    endpoint: ${env:LOKI_OTLP_ENDPOINT}
+    retry_on_failure:
+      enabled: true
+      initial_interval: 1s
+      max_interval: 30s
+      max_elapsed_time: 300s
+  # Prometheus must have --web.enable-remote-write-receiver enabled.
+  prometheusremotewrite/prometheus:
+    endpoint: ${env:PROMETHEUS_REMOTE_WRITE_ENDPOINT}
+    remote_write_queue:
+      enabled: true
+      num_consumers: 5
+      queue_size: 10000
+    retry_on_failure:
+      enabled: true
+      initial_interval: 1s
+      max_interval: 30s
+      max_elapsed_time: 300s
+  # Tempo OTLP/gRPC endpoint.
+  otlp/tempo:
+    endpoint: ${env:TEMPO_OTLP_GRPC_ENDPOINT}
+    tls:
+      insecure: ${env:TEMPO_TLS_INSECURE}
+    retry_on_failure:
+      enabled: true
+      initial_interval: 1s
+      max_interval: 30s
+      max_elapsed_time: 300s
+    sending_queue:
+      enabled: true
+      num_consumers: 5
+      queue_size: 10000
+service:
+  pipelines:
+    traces:
+      receivers: [otlp_grpc]
+      exporters: [otlp/tempo]
+    metrics:
+      receivers: [otlp_grpc]
+      exporters: [prometheusremotewrite/prometheus]
+    logs:
+      receivers: [otlp_grpc]
+      exporters: [otlphttp/loki]
