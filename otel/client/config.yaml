@@ -35,15 +35,31 @@ processors:
     check_interval: 10s
     limit_mib: 1000
     spike_limit_mib: 500
+  resource_detection/system:
+    detectors:
+      - system
+    override: false
+  resources:
+    attributes:
+      # TODO: ensure this is set per customer
+      - key: tenant_id
+        value: "Customer_Name"
+        action: upsert
+      - key: environment
+        value: "PROD"
+        action: upsert
+        # - key: host.name
+        #   value: "hostname"
+        #   action: upsert
   batch:
     timeout: 60s
 exporters:
   otlp_grpc:
     endpoint: 10.10.240.11:4317
     tls:
-      ca_file: /path/to/ca.pem
-      cert_file: /path/to/client-cert.pem
-      key_file: /path/to/client-key.pem
+      ca_file: ./cert/ca.pem
+      cert_file: ./cert/client-cert.pem
+      key_file: ./cert/client-key.pem
       insecure: false
       # Use Self Signed Certificates
       insecure_skip_verify: true
@@ -59,13 +75,25 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      processors: []
+      processors:
+        - memory_limiter
+        - resource_detection/system
+        - resources
+        - batch
       exporters: [otlp_grpc]
     metrics:
       receivers: [otlp, host_metrics]
-      processors: []
+      processors:
+        - memory_limiter
+        - resource_detection/system
+        - resources
+        - batch
       exporters: [otlp_grpc]
     logs:
       receivers: [otlp, windows_event_log]
-      processors: []
+      processors:
+        - memory_limiter
+        - resource_detection/system
+        - resources
+        - batch
       exporters: [otlp_grpc]
