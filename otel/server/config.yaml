@@ -3,6 +3,13 @@ receivers:
     protocols:
       grpc:
         endpoint: 0.0.0.0:4317
+        tls:
+          client_ca_file: /path/to/ca.pem
+          cert_file: /path/to/server-cert.pem
+          key_file: /path/to/server-key.pem
+          insecure: false
+          # Use Self Signed Certificates
+          insecure_skip_verify: true
       http:
         endpoint: 0.0.0.0:4318
 exporters:
