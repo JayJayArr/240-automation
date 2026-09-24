@@ -129,9 +129,9 @@ services:
       - monitoring
 volumes:
   prometheus-data:
-    external: true
+  # external: true
   grafana-data:
-    external: true
+  # external: true
   loki-data:
   tempo-data:
   tempo-runtime:
