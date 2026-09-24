@@ -22,7 +22,7 @@ receivers:
   # Events from Event Log
   windows_event_log:
     channel: application
-    # Uncomment to scrape logs from a directory and enter receiver-name into logs pipeline.
+    # Uncomment to scrape logs from a directory and enter receiver-name into logs/traces pipeline.
     # Automatically attaches to the end of each discovered log file.
     # Multiple formats can be used.
     # For further information please see: https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/receiver/filelogreceiver
@@ -39,11 +39,21 @@ processors:
     detectors:
       - system
     override: false
+    system:
+      resource_attributes:
+        host.ip:
+          enabled: true
+        os.name:
+          enabled: true
+        os.type:
+          enabled: true
+        os.version:
+          enabled: true
   resources:
     attributes:
       # TODO: ensure this is set per customer
       - key: tenant_id
-        value: "Customer_Name"
+        value: "AE"
         action: upsert
       - key: environment
         value: "PROD"
