@@ -18,3 +18,8 @@ storage:
       path: /var/tempo/blocks
 usage_report:
   reporting_enabled: false
+backend_scheduler:
+  provider:
+    compaction:
+      compaction:
+        block_retention: 168h # 168 hours is 7 days
