@@ -76,6 +76,12 @@ exporters:
     # Persist Data on Disk in case the exporter fails e.g. because of no network
     sending_queue:
       storage: file_storage
+      queue_size: 10000
+    retry_on_failure:
+      enabled: true
+      initial_interval: 1s
+      max_interval: 30s
+      max_elapsed_time: 1h
 extensions:
   file_storage:
     directory: ./queue
