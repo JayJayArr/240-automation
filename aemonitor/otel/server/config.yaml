@@ -12,7 +12,7 @@ receivers:
       http:
         endpoint: 0.0.0.0:4318
         tls:
-          # client_ca_file: /etc/certs/ca.pem
+          client_ca_file: /etc/certs/ca.pem
           cert_file: /etc/certs/server-cert.pem
           key_file: /etc/certs/server-key.pem
           min_version: "1.2"
