@@ -73,6 +73,7 @@ services:
       - --config=/etc/otelcol-contrib/config.yaml
     ports:
       - "4317:4317/tcp"
+      - "4318:4318/tcp"
     environment:
       LOKI_OTLP_ENDPOINT: ${LOKI_OTLP_ENDPOINT}
       PROMETHEUS_REMOTE_WRITE_ENDPOINT: ${PROMETHEUS_REMOTE_WRITE_ENDPOINT}
@@ -80,7 +81,7 @@ services:
       TEMPO_TLS_INSECURE: ${TEMPO_TLS_INSECURE:-true}
     volumes:
       - ./otel/server/config.yaml:/etc/otelcol-contrib/config.yaml:ro
-      - ./otel/certs:/etc/otelcol-contrib/certs:ro
+      - ./otel/certs/:/etc/certs/
     read_only: true
     tmpfs:
       - /tmp:size=64m,noexec,nosuid,nodev

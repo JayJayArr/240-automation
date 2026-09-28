@@ -1,2 +1,3 @@
 .vagrant
-dhparam.pem
+*.pem
+*.csr

@@ -4,9 +4,17 @@ receivers:
       grpc:
         endpoint: 0.0.0.0:4317
         tls:
-          client_ca_file: /etc/otelcol-contrib/certs/ca.pem
-          cert_file: /etc/otelcol-contrib/certs/server-cert.pem
-          key_file: /etc/otelcol-contrib/certs/server-key.pem
+          client_ca_file: /etc/certs/ca.pem
+          cert_file: /etc/certs/server-cert.pem
+          key_file: /etc/certs/server-key.pem
+          min_version: "1.2"
+          # Use Self Signed Certificates
+      http:
+        endpoint: 0.0.0.0:4318
+        tls:
+          client_ca_file: /etc/certs/ca.pem
+          cert_file: /etc/certs/server-cert.pem
+          key_file: /etc/certs/server-key.pem
           min_version: "1.2"
           # Use Self Signed Certificates
 processors:
