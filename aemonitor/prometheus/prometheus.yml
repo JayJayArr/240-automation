@@ -36,6 +36,7 @@ scrape_configs:
           - "AEVMSMOBILE01.ae.int"
           - "AESST01.ae.int"
           - "AEMSSQL01.ae.int"
+          - "AEAXISZUKO01.ae.int"
         type: A
         port: 9182
   - job_name: "non-domain-components"
