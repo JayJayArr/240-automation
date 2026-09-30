@@ -35,8 +35,8 @@ exporters:
       max_interval: 30s
       max_elapsed_time: 300s
   # Prometheus must have --web.enable-remote-write-receiver enabled.
-  prometheusremotewrite/prometheus:
-    endpoint: ${env:PROMETHEUS_REMOTE_WRITE_ENDPOINT}
+  otlphttp/prometheus:
+    endpoint: ${env:PROMETHEUS_OTLP_ENDPOINT}
     remote_write_queue:
       enabled: true
       num_consumers: 5
@@ -46,9 +46,6 @@ exporters:
       initial_interval: 1s
       max_interval: 30s
       max_elapsed_time: 300s
-    # this is needed according to the exmple configuration here: https://opentelemetry.io/docs/collector/configuration/#exporters
-    tls:
-      insecure: true
   # Tempo OTLP/gRPC endpoint.
   otlp/tempo:
     endpoint: ${env:TEMPO_OTLP_GRPC_ENDPOINT}
@@ -70,7 +67,7 @@ service:
       exporters: [otlp/tempo]
     metrics:
       receivers: [otlp/grpc]
-      exporters: [prometheusremotewrite/prometheus]
+      exporters: [otlphttp/prometheus]
     logs:
       receivers: [otlp/grpc]
       exporters: [otlphttp/loki]
