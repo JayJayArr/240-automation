@@ -46,6 +46,9 @@ exporters:
       initial_interval: 1s
       max_interval: 30s
       max_elapsed_time: 300s
+    # this is needed according to the exmple configuration here: https://opentelemetry.io/docs/collector/configuration/#exporters
+    tls:
+      insecure: true
   # Tempo OTLP/gRPC endpoint.
   otlp/tempo:
     endpoint: ${env:TEMPO_OTLP_GRPC_ENDPOINT}
