@@ -34,7 +34,7 @@ exporters:
       initial_interval: 1s
       max_interval: 30s
       max_elapsed_time: 300s
-  # Prometheus must have --web.enable-remote-write-receiver enabled.
+  # Prometheus must have --web.enable-otlp-receiver enabled, see compose.yaml
   otlphttp/prometheus:
     endpoint: ${env:PROMETHEUS_OTLP_ENDPOINT}
     remote_write_queue:

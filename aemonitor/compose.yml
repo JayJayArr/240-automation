@@ -20,7 +20,6 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.retention.time=30d"
       - "--web.enable-otlp-receiver"
-      # - "--web.enable-remote-write-receiver"
     networks:
       - monitoring
   grafana:
