@@ -11,12 +11,12 @@ receivers:
           # Use Self Signed Certificates
       http:
         endpoint: 0.0.0.0:4318
-        tls:
-          client_ca_file: /etc/certs/ca.pem
-          cert_file: /etc/certs/server-cert.pem
-          key_file: /etc/certs/server-key.pem
-          min_version: "1.2"
-          # Use Self Signed Certificates
+        # tls:
+        #   client_ca_file: /etc/certs/ca.pem
+        #   cert_file: /etc/certs/server-cert.pem
+        #   key_file: /etc/certs/server-key.pem
+        #   min_version: "1.2"
+        # Use Self Signed Certificates
 processors:
   memory_limiter:
     check_interval: 1s
