@@ -16,7 +16,6 @@ receivers:
       memory:
       network:
       process:
-      processes:
       paging:
       system:
   # Events from Event Log
@@ -49,7 +48,7 @@ processors:
           enabled: true
         os.version:
           enabled: true
-  resources:
+  resource:
     attributes:
       # TODO: ensure this is set per customer
       - key: tenant_id
@@ -67,9 +66,9 @@ exporters:
   otlp_grpc:
     endpoint: 10.10.240.11:4317
     tls:
-      ca_file: ./cert/root-ca.pem
-      cert_file: ./cert/client-cert.pem
-      key_file: ./cert/client-key.pem
+      ca_file: C:\Program Files\OpenTelemetry Collector\cert\root-ca.pem
+      cert_file: C:\Program Files\OpenTelemetry Collector\cert\client-cert.pem
+      key_file: C:\Program Files\OpenTelemetry Collector\cert\client-key.pem
       insecure: false
       # Use Self Signed Certificates
       insecure_skip_verify: true
@@ -94,7 +93,7 @@ service:
       processors:
         - memory_limiter
         - resource_detection/system
-        - resources
+        - resource
         - batch
       exporters: [otlp_grpc]
     metrics:
@@ -102,7 +101,7 @@ service:
       processors:
         - memory_limiter
         - resource_detection/system
-        - resources
+        - resource
         - batch
       exporters: [otlp_grpc]
     logs:
@@ -110,6 +109,6 @@ service:
       processors:
         - memory_limiter
         - resource_detection/system
-        - resources
+        - resource
         - batch
       exporters: [otlp_grpc]
