@@ -67,7 +67,7 @@ exporters:
   otlp_grpc:
     endpoint: 10.10.240.11:4317
     tls:
-      ca_file: ./cert/ca.pem
+      ca_file: ./cert/root-ca.pem
       cert_file: ./cert/client-cert.pem
       key_file: ./cert/client-key.pem
       insecure: false
