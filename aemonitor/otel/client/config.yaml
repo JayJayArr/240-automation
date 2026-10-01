@@ -16,6 +16,7 @@ receivers:
       memory:
       network:
       process:
+        mute_process_all_errors: true
       paging:
       system:
   # Events from Event Log
