@@ -49,18 +49,17 @@ processors:
           enabled: true
         os.version:
           enabled: true
-  resource:
-    attributes:
-      # TODO: ensure this is set per customer
-      - key: tenant_id
-        value: "AE"
-        action: upsert
-      - key: environment
-        value: "PROD"
-        action: upsert
-        # - key: host.name
-        #   value: "hostname"
-        #   action: upsert
+  attributes:
+    actions:
+    - key: tenant_id
+      value: AE
+      action: insert
+    - key: environment
+      value: TEST
+      action: insert
+    - key: host.name
+      value: AEAIM01.ae.int
+      action: upsert
   batch:
     timeout: 60s
 exporters:
@@ -94,7 +93,7 @@ service:
       processors:
         - memory_limiter
         - resource_detection/system
-        - resource
+        - attributes
         - batch
       exporters: [otlp_grpc]
     metrics:
@@ -102,7 +101,7 @@ service:
       processors:
         - memory_limiter
         - resource_detection/system
-        - resource
+        - attributes
         - batch
       exporters: [otlp_grpc]
     logs:
@@ -110,6 +109,6 @@ service:
       processors:
         - memory_limiter
         - resource_detection/system
-        - resource
+        - attributes
         - batch
       exporters: [otlp_grpc]
