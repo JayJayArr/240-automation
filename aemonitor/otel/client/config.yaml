@@ -51,15 +51,15 @@ processors:
           enabled: true
   attributes:
     actions:
-    - key: tenant_id
-      value: AE
-      action: insert
-    - key: environment
-      value: TEST
-      action: insert
-    - key: host.name
-      value: AEAIM01.ae.int
-      action: upsert
+      - key: tenant_id
+        value: AE
+        action: insert
+      - key: environment
+        value: TEST
+        action: insert
+      - key: host.name
+        value: AEAIM01.ae.int
+        action: upsert
   batch:
     timeout: 60s
 exporters:
@@ -67,7 +67,7 @@ exporters:
     endpoint: 10.10.240.11:4317
     tls:
       ca_file: C:\Program Files\OpenTelemetry Collector\cert\root-ca.pem
-      cert_file: C:\Program Files\OpenTelemetry Collector\cert\client-cert.pem
+      cert_file: C:\Program Files\OpenTelemetry Collector\cert\client.pem
       key_file: C:\Program Files\OpenTelemetry Collector\cert\client-key.pem
       insecure: false
       # Use Self Signed Certificates
