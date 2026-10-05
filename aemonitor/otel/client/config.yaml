@@ -52,13 +52,13 @@ processors:
   attributes:
     actions:
       - key: tenant_id
-        value: AE
+        value: undefined
         action: insert
       - key: environment
-        value: TEST
+        value: undefined
         action: insert
       - key: host.name
-        value: AEAIM01.ae.int
+        value: undefined
         action: upsert
   batch:
     timeout: 60s
