@@ -22,38 +22,38 @@ scrape_configs:
     metrics_path: "/v1/metrics"
     static_configs:
       - targets: ["SANDOZPROWATCH.ae.int:3000"]
-  - job_name: "dns-a-windows"
-    dns_sd_configs:
-      - names:
-          - "AEDC01.ae.int"
-          - "AEDC02.ae.int"
-          - "AEDHCP01.ae.int"
-          - "AEVEEAM01.ae.int"
-          - "AECERT01.ae.int"
-          - "AEPROWATCH65.ae.int"
-          - "AEPROWATCH65SEC.ae.int"
-          - "AEWINGUARD01.ae.int"
-          - "SANDOZPROWATCH.ae.int"
-          - "SDZ-PWDATA.ae.int"
-          - "AEDEMOSERVER01.ae.int"
-          - "AEAIM01.ae.int"
-          - "AEVMS01.ae.int"
-          - "AEVMS02.ae.int"
-          - "AEREC01.ae.int"
-          - "AEREC02.ae.int"
-          - "AEFAILREC01.ae.int"
-          - "AEVMSMOBILE01.ae.int"
-          - "AESST01.ae.int"
-          - "AEMSSQL01.ae.int"
-          - "AEAXISZUKO01.ae.int"
-        type: A
-        port: 9182
-  - job_name: "non-domain-components"
-    scheme: http
-    static_configs:
-      - targets:
-          - "10.10.240.47:9182" #
-          - "10.10.240.155:9100" #Proxmox node
+  # - job_name: "dns-a-windows"
+  #   dns_sd_configs:
+  #     - names:
+  #         - "AEDC01.ae.int"
+  #         - "AEDC02.ae.int"
+  #         - "AEDHCP01.ae.int"
+  #         - "AEVEEAM01.ae.int"
+  #         - "AECERT01.ae.int"
+  #         - "AEPROWATCH65.ae.int"
+  #         - "AEPROWATCH65SEC.ae.int"
+  #         - "AEWINGUARD01.ae.int"
+  #         - "SANDOZPROWATCH.ae.int"
+  #         - "SDZ-PWDATA.ae.int"
+  #         - "AEDEMOSERVER01.ae.int"
+  #         - "AEAIM01.ae.int"
+  #         - "AEVMS01.ae.int"
+  #         - "AEVMS02.ae.int"
+  #         - "AEREC01.ae.int"
+  #         - "AEREC02.ae.int"
+  #         - "AEFAILREC01.ae.int"
+  #         - "AEVMSMOBILE01.ae.int"
+  #         - "AESST01.ae.int"
+  #         - "AEMSSQL01.ae.int"
+  #         - "AEAXISZUKO01.ae.int"
+  #       type: A
+  #       port: 9182
+  # - job_name: "non-domain-components"
+  #   scheme: http
+  #   static_configs:
+  #     - targets:
+  # - "10.10.240.47:9182" #
+  # - "10.10.240.155:9100" #Proxmox node
   - job_name: "dns-a-linux"
     dns_sd_configs:
       - names:
