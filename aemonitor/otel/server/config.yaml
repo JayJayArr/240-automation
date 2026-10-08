@@ -7,7 +7,7 @@ receivers:
           client_ca_file: /etc/certs/root-ca.pem
           cert_file: /etc/certs/server-cert.pem
           key_file: /etc/certs/server-key.pem
-          min_version: "1.2"
+          # min_version: "1.2" defaults to 1.2
           # Use Self Signed Certificates
       http:
         endpoint: 0.0.0.0:4318
