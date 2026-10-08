@@ -55,12 +55,12 @@ scrape_configs:
   # - "10.10.240.47:9182" #
   # - "10.10.240.155:9100" #Proxmox node
   - job_name: "dns-a-linux"
-    dns_sd_configs:
-      - names:
-          - "AEMONITOR01.ae.int"
-          # - "AEPATCHMON01.ae.int"
-        type: A
-        port: 9100
+    # dns_sd_configs:
+    # - names:
+    # - "AEMONITOR01.ae.int"
+    # - "AEPATCHMON01.ae.int"
+    # type: A
+    # port: 9100
 storage:
   tsdb:
     out_of_order_time_window: 30m
