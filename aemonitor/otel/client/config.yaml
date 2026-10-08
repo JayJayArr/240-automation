@@ -69,9 +69,6 @@ exporters:
       ca_file: C:\Program Files\OpenTelemetry Collector\cert\root-ca.pem
       cert_file: C:\Program Files\OpenTelemetry Collector\cert\client.pem
       key_file: C:\Program Files\OpenTelemetry Collector\cert\client-key.pem
-      insecure: false
-      # Use Self Signed Certificates
-      insecure_skip_verify: true
     # Persist Data on Disk in case the exporter fails e.g. because of no network
     sending_queue:
       storage: file_storage
