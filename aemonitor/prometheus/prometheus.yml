@@ -63,4 +63,4 @@ scrape_configs:
     # port: 9100
 storage:
   tsdb:
-    out_of_order_time_window: 30m
+    out_of_order_time_window: 24h
