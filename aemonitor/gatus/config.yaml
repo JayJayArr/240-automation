@@ -87,7 +87,7 @@ endpoints:
       - "[CERTIFICATE_EXPIRATION] > 14d"
   - name: AE-Monitor OTEL Collector
     group: CORE
-    url: https://10.10.240.11:4317
+    url: tcp://10.10.240.11:4317
     interval: 60s
     client:
       insecure: true
