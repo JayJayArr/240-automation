@@ -1,0 +1,10 @@
+# Installs the docker role and prunes unneded stuff
+- hosts: docker
+  roles:
+    - geerlingguy.docker
+  tasks:
+    - name: prune stopped containers
+      community.docker.docker_prune:
+        containers: true
+        images: true
+        networks: true
