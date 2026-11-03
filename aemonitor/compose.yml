@@ -127,6 +127,11 @@ services:
       - "3200"
     networks:
       - monitoring
+  watchtower:
+    image: nickfedor/watchtower:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 volumes:
   prometheus-data:
     external: true
