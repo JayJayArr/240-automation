@@ -131,8 +131,7 @@ services:
     image: nickfedor/watchtower:latest
     container_name: watchtower
     restart: unless-stopped
-    command:
-      - --schedule '0 0 4 * * *'
+    command: -s '0 0 4 * * *'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 volumes:
