@@ -49,17 +49,12 @@ processors:
           enabled: true
         os.version:
           enabled: true
-  attributes:
-    actions:
-      - key: tenant_id
-        value: undefined
-        action: insert
-      - key: environment
-        value: undefined
-        action: insert
-      - key: host.name
-        value: undefined
-        action: upsert
+  transform:
+    metric_statements:
+      - set(datapoint.attributes["container.name"], resource.attributes["container.name"]) where resource.attributes["container.name"] != nil
+      - set(datapoint.attributes["tenant_id"], "AE")
+      - set(datapoint.attributes["environment"], "CORE
+      - set(datapoint.attributes["host.name"], "AEMONITOR01")
   batch:
     timeout: 60s
 exporters:
@@ -93,7 +88,7 @@ service:
       processors:
         - memory_limiter
         - resource_detection/system
-        - attributes
+        - transform
         - batch
       exporters: [otlp_grpc]
     metrics:
@@ -101,7 +96,7 @@ service:
       processors:
         - memory_limiter
         - resource_detection/system
-        - attributes
+        - transform
         - batch
       exporters: [otlp_grpc]
     logs:
@@ -109,6 +104,6 @@ service:
       processors:
         - memory_limiter
         - resource_detection/system
-        - attributes
+        - transform
         - batch
       exporters: [otlp_grpc]
