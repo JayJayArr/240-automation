@@ -23,7 +23,7 @@ processors:
     limit_mib: 512
     spike_limit_mib: 128
   batch:
-    timeout: 5s
+    timeout: 10s
     send_batch_size: 8192
 exporters:
   # Loki 3.x native OTLP log ingestion. The exporter appends /v1/logs.
@@ -31,7 +31,7 @@ exporters:
     endpoint: ${env:LOKI_OTLP_ENDPOINT}
     retry_on_failure:
       enabled: true
-      initial_interval: 1s
+      initial_interval: 5s
       max_interval: 30s
       max_elapsed_time: 300s
     sending_queue:
@@ -45,7 +45,7 @@ exporters:
     #   queue_size: 10000
     retry_on_failure:
       enabled: true
-      initial_interval: 1s
+      initial_interval: 5s
       max_interval: 30s
       max_elapsed_time: 300s
     sending_queue:
@@ -57,12 +57,12 @@ exporters:
       insecure: ${env:TEMPO_TLS_INSECURE}
     retry_on_failure:
       enabled: true
-      initial_interval: 1s
+      initial_interval: 5s
       max_interval: 30s
       max_elapsed_time: 300s
     sending_queue:
       enabled: true
-      num_consumers: 5
+      # num_consumers: 5 # default is 10
       queue_size: 10000
 service:
   pipelines:
