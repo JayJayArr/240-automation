@@ -52,9 +52,9 @@ processors:
   transform:
     metric_statements:
       - set(datapoint.attributes["container.name"], resource.attributes["container.name"]) where resource.attributes["container.name"] != nil
-      - set(datapoint.attributes["tenant_id"], "AE")
-      - set(datapoint.attributes["environment"], "CORE
-      - set(datapoint.attributes["host.name"], "AEMONITOR01")
+      - set(datapoint.attributes["tenant_id"], "undefined")
+      - set(datapoint.attributes["environment"], "undefined"
+      - set(datapoint.attributes["host.name"], "undefined")
   batch:
     timeout: 60s
 exporters:
