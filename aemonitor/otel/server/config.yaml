@@ -39,10 +39,10 @@ exporters:
   # Prometheus must have --web.enable-otlp-receiver enabled, see compose.yaml
   otlphttp/prometheus:
     endpoint: ${env:PROMETHEUS_OTLP_ENDPOINT}
-    remote_write_queue:
-      enabled: true
-      num_consumers: 5
-      queue_size: 10000
+    # remote_write_queue:
+    #   enabled: true
+    #   num_consumers: 5
+    #   queue_size: 10000
     retry_on_failure:
       enabled: true
       initial_interval: 1s
