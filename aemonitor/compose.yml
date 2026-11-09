@@ -1,7 +1,7 @@
 services:
   gatus:
     container_name: gatus
-    image: twinproduction/gatus
+    image: twinproduction/gatus:stable
     restart: unless-stopped
     volumes:
       - ./gatus:/config
@@ -127,13 +127,13 @@ services:
       - "3200"
     networks:
       - monitoring
-  watchtower:
-    image: nickfedor/watchtower:latest
-    container_name: watchtower
-    restart: unless-stopped
-    command: -s '0 0 4 * * *'
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      # watchtower:
+      #   image: nickfedor/watchtower:latest
+      #   container_name: watchtower
+      #   restart: unless-stopped
+      #   command: -s '0 0 4 * * *'
+      #   volumes:
+      #     - /var/run/docker.sock:/var/run/docker.sock
 volumes:
   prometheus-data:
     external: true
