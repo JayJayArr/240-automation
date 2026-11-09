@@ -72,7 +72,8 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1024M
+          memory: 1024m
+          cpus: "1"
     command:
       - --config=/etc/otelcol-contrib/config.yaml
     ports:
