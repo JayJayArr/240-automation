@@ -23,3 +23,8 @@ backend_scheduler:
     compaction:
       compaction:
         block_retention: 336h # 336 hours is 14 days
+query_frontend:
+  metrics:
+    max_duration: 0
+  search:
+    max_duration: 0
