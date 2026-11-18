@@ -85,15 +85,15 @@ service:
   pipelines:
     traces:
       receivers: [otlp/grpc]
-      processors: [batch]
+      processors: [memory_limiter, batch]
       exporters: [otlp_grpc/tempo]
     metrics:
       receivers: [otlp/grpc]
-      processors: [batch]
+      processors: [memory_limiter, batch]
       exporters: [otlp_http/prometheus]
     logs:
       receivers: [otlp/grpc]
-      processors: [batch]
+      processors: [memory_limiter, batch]
       exporters: [otlp_http/loki]
   telemetry:
     metrics:
