@@ -36,6 +36,7 @@ exporters:
       max_elapsed_time: 300s
     sending_queue:
       queue_size: 10000
+      storage: file_storage/loki
   # Prometheus must have --web.enable-otlp-receiver enabled, see compose.yaml
   otlp_http/prometheus:
     endpoint: ${env:PROMETHEUS_OTLP_ENDPOINT}
@@ -50,6 +51,7 @@ exporters:
       max_elapsed_time: 300s
     sending_queue:
       queue_size: 10000
+      storage: file_storage/prometheus
   # Tempo OTLP/gRPC endpoint.
   otlp_grpc/tempo:
     endpoint: ${env:TEMPO_OTLP_GRPC_ENDPOINT}
@@ -64,7 +66,22 @@ exporters:
       enabled: true
       # num_consumers: 5 # default is 10
       queue_size: 10000
+      storage: file_storage/tempo
+extensions:
+  file_storage/loki:
+    directory: /var/lib/otelcol/file_storage/loki
+    create_directory: true
+    recreate: true
+  file_storage/tempo:
+    directory: /var/lib/otelcol/file_storage/tempo
+    create_directory: true
+    recreate: true
+  file_storage/prometheus:
+    directory: /var/lib/otelcol/file_storage/prometheus
+    create_directory: true
+    recreate: true
 service:
+  extensions: [file_storage/loki, file_storage/tempo, file_storage/prometheus]
   pipelines:
     traces:
       receivers: [otlp/grpc]
