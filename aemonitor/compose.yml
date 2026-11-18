@@ -69,6 +69,8 @@ services:
     container_name: otel-collector
     restart: always
     env_file: .env
+    mem_limit: 1024m
+    cpus: 1
     deploy:
       resources:
         limits:
@@ -132,13 +134,6 @@ services:
       - "3200"
     networks:
       - monitoring
-      # watchtower:
-      #   image: nickfedor/watchtower:latest
-      #   container_name: watchtower
-      #   restart: unless-stopped
-      #   command: -s '0 0 4 * * *'
-      #   volumes:
-      #     - /var/run/docker.sock:/var/run/docker.sock
 volumes:
   prometheus-data:
     external: true
