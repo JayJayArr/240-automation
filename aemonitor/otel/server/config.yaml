@@ -27,7 +27,7 @@ processors:
     send_batch_size: 8192
 exporters:
   # Loki 3.x native OTLP log ingestion. The exporter appends /v1/logs.
-  otlphttp/loki:
+  otlp_http/loki:
     endpoint: ${env:LOKI_OTLP_ENDPOINT}
     retry_on_failure:
       enabled: true
@@ -37,7 +37,7 @@ exporters:
     sending_queue:
       queue_size: 10000
   # Prometheus must have --web.enable-otlp-receiver enabled, see compose.yaml
-  otlphttp/prometheus:
+  otlp_http/prometheus:
     endpoint: ${env:PROMETHEUS_OTLP_ENDPOINT}
     # remote_write_queue:
     #   enabled: true
@@ -51,7 +51,7 @@ exporters:
     sending_queue:
       queue_size: 10000
   # Tempo OTLP/gRPC endpoint.
-  otlp/tempo:
+  otlp_grpc/tempo:
     endpoint: ${env:TEMPO_OTLP_GRPC_ENDPOINT}
     tls:
       insecure: ${env:TEMPO_TLS_INSECURE}
@@ -69,15 +69,15 @@ service:
     traces:
       receivers: [otlp/grpc]
       processors: [batch]
-      exporters: [otlp/tempo]
+      exporters: [otlp_grpc/tempo]
     metrics:
       receivers: [otlp/grpc]
       processors: [batch]
-      exporters: [otlphttp/prometheus]
+      exporters: [otlp_http/prometheus]
     logs:
       receivers: [otlp/grpc]
       processors: [batch]
-      exporters: [otlphttp/loki]
+      exporters: [otlp_http/loki]
   telemetry:
     metrics:
       readers:
