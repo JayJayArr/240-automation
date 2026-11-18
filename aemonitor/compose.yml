@@ -86,6 +86,8 @@ services:
       PROMETHEUS_REMOTE_WRITE_ENDPOINT: ${PROMETHEUS_OTLP_ENDPOINT}
       TEMPO_OTLP_GRPC_ENDPOINT: ${TEMPO_OTLP_GRPC_ENDPOINT}
       TEMPO_TLS_INSECURE: ${TEMPO_TLS_INSECURE:-true}
+      # 90% of mem_limit
+      GOMEMLIMIT: 920MiB
     volumes:
       - ./otel/server/config.yaml:/etc/otelcol-contrib/config.yaml:ro
       - ./otel/certs/:/etc/certs/

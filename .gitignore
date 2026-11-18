@@ -2,5 +2,6 @@
 *.pem
 *.csr
 certs/
+./aemonitor/otel/queue/*
 
 *.cfg
