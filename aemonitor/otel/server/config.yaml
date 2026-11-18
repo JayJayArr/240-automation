@@ -68,12 +68,15 @@ service:
   pipelines:
     traces:
       receivers: [otlp/grpc]
+      processors: [batch]
       exporters: [otlp/tempo]
     metrics:
       receivers: [otlp/grpc]
+      processors: [batch]
       exporters: [otlphttp/prometheus]
     logs:
       receivers: [otlp/grpc]
+      processors: [batch]
       exporters: [otlphttp/loki]
   telemetry:
     metrics:
